@@ -1,0 +1,15 @@
+.player-stats {
+    text-align: right;
+    margin: 20px;
+}
+
+player-stats.h1 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
+.wins-value {
+    font-size: 1.7em;
+    font-weight: bold;
+    color: #a254;
+}

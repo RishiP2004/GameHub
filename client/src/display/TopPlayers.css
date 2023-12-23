@@ -1,0 +1,14 @@
+.top-players-container {
+    text-align: right;
+    margin: 20px;
+    color: #282c34;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    margin-bottom: 10px;
+}
