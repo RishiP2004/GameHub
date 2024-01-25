@@ -11,7 +11,7 @@ function PlayerStats() {
         if (socketId) {
             axios.get(`/player-wins/${socketId}`)
                 .then(response => setMyWins(response.data.wins))
-                .catch(error => console.error('Error fetching my wins:', error));
+                .catch(error => console.error('Error fetching wins:', error));
         }
     }, [socketId]);
 

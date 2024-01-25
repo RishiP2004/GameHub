@@ -10,7 +10,7 @@ export const SocketProvider = ({ children }) => {
     const [socketId, setSocketId] = useState(null);
 
     useEffect(() => {
-        const newSocket = io('http://localhost:3001');
+        const newSocket = io('http://localhost:3000');
         setSocket(newSocket);
 
         newSocket.on('connect', () => {
