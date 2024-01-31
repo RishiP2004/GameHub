@@ -1,12 +1,10 @@
 # TicTacToePlus
 
-This project is to learn Node and React.
+Fun little game for user vs simple AI using Node, React, SQLite and Knex 
 
-Fun little game being made for user vs AI using Node, React, SQLite and Knex 
+Features 
 
-Features (WIP)
-
-- User wins against AI storing based on socketIds 
-- Multiple player data synchronization
+- User wins against the AI storing, based on socketIds 
+- Multiple player data synchronization using SQLite and Knex
 - Top wins and specific user wins displayed
 - Easy communication between server and client
