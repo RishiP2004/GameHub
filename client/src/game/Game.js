@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Board from "./Board";
 import './Game.css';
 
-function Game() {
+function Game({username}) {
     const [history, setHistory] = useState([Array(9).fill(null)]);
     const [currentMove, setCurrentMove] = useState(0);
     const [selectedPointer, setSelectedPointer] = useState(0);
@@ -17,7 +17,7 @@ function Game() {
     return (
         <div className="game">
             <div className="game-board">
-                <Board selectedPointer={selectedPointer} squares={currentSquares} onPlay={handlePlay} />
+                <Board username = {username} selectedPointer={selectedPointer} squares={currentSquares} onPlay={handlePlay} />
             </div>
             <div className="pointer-select">
                 <h1>Select a pointer:</h1>

@@ -2,17 +2,16 @@ import React, { useState } from "react";
 import './Board.css';
 import AI from './ai/AI.js';
 import axios from "axios";
-import {GetSocket} from "../login/SocketData";
 
-async function updateWins() {
+async function updateWins({ username }) {
     try {
-        await axios.put(`/api/player/${GetSocket()}/updateWins`);
+        await axios.put(`/api/player/${username}/updateWins`);
     } catch (error) {
         console.error('Error updating win count:', error);
     }
 }
 
-function Board({ selectedPointer, squares, onPlay }) {
+function Board({ username, selectedPointer, squares, onPlay }) {
     const [playerTurn, setPlayerTurn] = useState(1);
 
     function handleClick(i) {
@@ -36,7 +35,7 @@ function Board({ selectedPointer, squares, onPlay }) {
         status = 'Winner: ' + winner === selectedPointer ? 'Player' : 'AI';
 
         if(winner === selectedPointer) {
-            updateWins().then(r => "Updated wins");
+            updateWins(username).then(r => "Updated wins");
         }
     } else {
         status = 'Your Turn';

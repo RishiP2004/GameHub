@@ -7,10 +7,9 @@ const knex = require('knex')({
 });
 
 knex.schema.createTable('player', (table) => {
-    table.autoIncrement('id').primaryKey()
-    table.string('socketId').useNullAsDefault(false);
+    table.increments('id').primaryKey()
     table.string('playerName').useNullAsDefault(false);
-    table.autoIncrement('wins').default(0)
+    table.integer('wins').default(0)
 }).then(() => {
     console.log("Database setup");
 }).catch(() => {

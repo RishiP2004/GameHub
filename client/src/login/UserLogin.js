@@ -1,39 +1,43 @@
 import React, { useState } from 'react';
 import './UserLogin.css';
-import {GetSocket} from "./SocketData";
 import axios from "axios";
+import { useHistory } from 'react-router-dom';
 
-function UserLogin() {
-    const [username, setUserName] = useState('');
+function UserLogin({ setLoggedIn, setUsername }) {
+    console.log('Rendering UserLogin component');
+    const [usernameInput, setUsernameInput] = useState('');
     const [password, setPassword] = useState('');
-    const { socketId } = GetSocket();
+    const history = useHistory();
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
 
-        try {
-            const response = await axios.post('/user-login', { socketId, username, password });
-            console.log('Login successful!', response.data);
-            //todo: redirect to secondary page
-        } catch (error) {
-            console.error('Error during login:', error);
-        }
+        axios.post('http://localhost:3001/login', { usernameInput, password })
+            .then((response) => {
+                const token = response.data.token;
+                document.cookie = `authToken=${token}; path=/`;
+                setLoggedIn(true);
+                setUsername(usernameInput);
+                history.push('/');
+            }).catch((error) => {
+            console.error('Login failed:', error.response.data.error);
+        });
     };
 
     return (
         <div className="login-container">
             <h1>Please Log In</h1>
-            <form onSubmit={handleSubmit}> {}
+            <form onSubmit={handleSubmit}>
                 <label>
                     <p>Username</p>
-                    <input type="text" value={username} onChange={e => setUserName(e.target.value)} />
+                    <input type="text" value={usernameInput} onChange={e => setUsernameInput(e.target.value)} />
                 </label>
                 <label>
                     <p>Password</p>
                     <input type="password" value={password} onChange={e => setPassword(e.target.value)} />
                 </label>
                 <div>
-                    <button type="submit">Submit onSubmit={e => handleSubmit(e)}</button>
+                    <button type="submit">Submit</button>
                 </div>
             </form>
         </div>

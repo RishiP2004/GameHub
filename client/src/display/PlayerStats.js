@@ -1,19 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './PlayerStats.css';
-import {GetSocket} from "../login/SocketData";
 
-function PlayerStats() {
+function PlayerStats({ username }) {
     const [myWins, setMyWins] = useState(0);
-    const { socketId } = GetSocket();
 
     useEffect(() => {
-        if (socketId) {
-            axios.get(`/player-wins/${socketId}`)
+        if (username) {
+            axios.get(`/player-wins/${username}`)
                 .then(response => setMyWins(response.data.wins))
                 .catch(error => console.error('Error fetching wins:', error));
         }
-    }, [socketId]);
+    }, [username]);
 
     return (
         <div className="player-stats">
