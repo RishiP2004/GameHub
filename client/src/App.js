@@ -11,44 +11,60 @@ import PlayerGame from "./game/player/PlayerGame";
 function App() {
     const [loggedIn, setLoggedIn] = useState(false);
 
+	const user = JSON.parse(localStorage.getItem("user"));
+	const authToken = document.cookie.replace(/(?:(?:^|.*;\s*)authToken\s*=\s*([^;]*).*$)|^.*$/, '$1');
+
+	if(!user || !authToken) {
+		setLoggedIn(false);
+		return;
+	}
     useEffect(() => {
-        const authToken = document.cookie.replace(/(?:(?:^|.*;\s*)authToken\s*=\s*([^;]*).*$)|^.*$/, '$1');
+		axios.get('http://localhost:3001/verify-token', {
+            headers: {
+                Authorization: `Bearer ${authToken}`,
+            },
+        }).then(() => {
+            setLoggedIn((prevLoggedIn) => !prevLoggedIn);
+        }).catch((error) => {
+            console.error('Token verification failed:', error);
+        });
 
-        if (authToken) {
-            axios.get('http://localhost:3001/verify-token', {
-                headers: {
-                    Authorization: `Bearer ${authToken}`,
-                },
-            }).then(() => {
-                setLoggedIn((prevLoggedIn) => !prevLoggedIn);
-                const decodedToken = decodeURIComponent(atob(authToken.split('.')[1]));
-                const { username } = JSON.parse(decodedToken);
-                localStorage.setItem('user', JSON.stringify(username));
-            }).catch((error) => {
-                console.error('Token verification failed:', error);
-            });
-
-        }
     }, [setLoggedIn]);
     return (
         <Router>
             <Switch>
-                <PlayerStats />
                 <TopPlayers />
                 <Route path="/game/:player1/:player2">
-                    <PlayerGame />
-                </Route>
-                <Route path="/ai-game">
-                    <AIGame />
-                </Route>
-                <Route path="/" exact>
-                    {loggedIn ? (
-                        <GameSelection />
-                    ) : (
-                        <UserLogin setLoggedIn={setLoggedIn} />
-                    )}
-                </Route>
-            </Switch>
+				  {loggedIn ? (
+					<>
+					  <PlayerStats />
+					  <PlayerGame />
+					</>
+				  ) : (
+					<Redirect to="/" />
+				  )}
+				</Route>
+				<Route path="/ai-game">
+				  {loggedIn ? (
+					<>
+					  <PlayerStats />
+					  <AIGame />
+					</>
+				  ) : (
+					<Redirect to="/" />
+				  )}
+				</Route>
+				<Route path="/" exact>
+				  {loggedIn ? (
+					<>
+					  <PlayerStats />
+					  <GameSelection />
+					</>
+				  ) : (
+					<UserLogin setLoggedIn={setLoggedIn} />
+				  )}
+				</Route>
+			</Switch>
         </Router>
     );
 }

@@ -1,46 +1,59 @@
-import React from "react";
-import Board from "../Board";
-import AI from "./AI";
+import React, {useState} from "react";
 import { updateWins } from "../../display/PlayerStats";
+import {calculateWinner, Square} from "../GameUtils";
+import getAIMove from "./AI";
+import '../Board.css';
 
-class AIBoard extends Board {
-    constructor({ onPlay, setPlayerTurn }) {
-        super({ onPlay, setPlayerTurn });
-        this.username = JSON.parse(localStorage.getItem('user'));
-    }
+const AIBoard = ({selectedPointer, squares, onPlay}) => {
+    const username = JSON.parse(localStorage.getItem('user'));
+    const [ playerTurn, setPlayerTurn ]= useState(0);
+    let status;
 
-    async handleClick(i) {
-        const { squares, playerTurn, selectedPointer, onPlay, setPlayerTurn } = this.getState();
+    async function handleClick(i) {
         const nextSquares = squares.slice();
-        const winner = super.calculateWinner(nextSquares);
+        const winner = calculateWinner(nextSquares);
 
-        if (super.calculateWinner(squares) || squares[i]) return;
+        if (calculateWinner(squares) || squares[i]) return;
 
         if (playerTurn === 0) {
             nextSquares[i] = selectedPointer === 0 ? 'X' : 'O';
             setPlayerTurn(1);
         } else {
-            await AI.getMove(squares, selectedPointer, onPlay);
+            await getAIMove(squares, selectedPointer, onPlay);
             setPlayerTurn(0);
         }
         onPlay(nextSquares);
 
         if (winner) {
+            status = 'Winner: ' + (winner === selectedPointer ? 'Player' : 'AI');
+
             const isPlayerWinner = winner === selectedPointer;
             if (isPlayerWinner) {
-                updateWins(this.username).then(() => console.log("Updated wins"));
+                updateWins(username).then(() => console.log("Updated wins"));
             }
+        } else {
+            status = 'Your Turn';
         }
     }
 
-    render() {
-        return (
+    return (
+        <>
+            <div className="status">{status}</div>
             <div className="board">
-                <h2>AI's Board</h2>
-                {super.render()}
+                {[0, 1, 2].map((row) => (
+                    <div key={row} className="board-row">
+                        {[0, 1, 2].map((col) => (
+                            <Square
+                                key={col}
+                                value={squares[row * 3 + col]}
+                                onSquareClick={() => handleClick(row * 3 + col)}
+                            />
+                        ))}
+                    </div>
+                ))}
             </div>
-        );
-    }
+        </>
+    );
 }
 
 export default AIBoard;

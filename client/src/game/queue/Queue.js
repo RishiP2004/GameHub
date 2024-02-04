@@ -10,7 +10,7 @@ const Queue = () => {
     };
 
     const handleClick = () => {
-        const storedUsername = localStorage.getItem("username");
+        const storedUsername = localStorage.getItem("user");
 
         if (storedUsername) {
             setQueue([...queue, storedUsername]);

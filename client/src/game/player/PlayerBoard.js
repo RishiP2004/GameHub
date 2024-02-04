@@ -1,47 +1,51 @@
-import React from "react";
-import Board from "../Board";
+import React, {useState} from "react";
 import { updateWins } from "../../display/PlayerStats";
+import {calculateWinner, Square} from "../GameUtils";
 import {useHistory} from "react-router-dom";
+import '../Board.css';
 
-class PlayerBoard extends Board {
-    constructor({player1, player2, onPlay, setPlayerTurn }) {
-        super({ onPlay, setPlayerTurn });
-        this.player1 = player1
-        this.player2 = player2
-        this.history = useHistory();
-    }
+const PlayerBoard = (player1, player2, squares, onPlay) => {
+    const history = useHistory()
 
-    async handleClick(i) {
-        const { squares, playerTurn, onPlay, setPlayerTurn } = this.getState();
+    const handleClick = (i) => {
+        const { playerTurn, setPlayerTurn } = useState();
         const nextSquares = squares.slice();
-        const winner = super.calculateWinner(nextSquares);
+        const winner = calculateWinner(nextSquares);
         // 0 is player1, 1 is player2
-        if (super.calculateWinner(squares) || squares[i]) return;
+        if (calculateWinner(squares) || squares[i]) return;
 
         if (playerTurn === 0) {
-            nextSquares[i] = this.player1.getPointer() === 0 ? 'X' : 'O';
+            nextSquares[i] = player1.getPointer() === 0 ? 'X' : 'O';
             setPlayerTurn(1);
         } else {
-            nextSquares[i] = this.player2.getPointer() === 0 ? 'X' : 'O';
+            nextSquares[i] = player2.getPointer() === 0 ? 'X' : 'O';
             setPlayerTurn(0);
         }
         onPlay(nextSquares);
 
         if (winner) {
-            let winningPlayer = this.player1.getPointer() === 0 ? this.player1.getUsername() : this.player2.getUsername();
-
-            updateWins(winningPlayer).then(() => this.history.push('/selection'));
+            updateWins(player1.getPointer() === 0 ? player1.getUsername() : player2.getUsername()).then(() => history.push('/'));
         }
     }
 
-    render() {
-        return (
+    return (
+        <>
+            <div className="status">{player1.getName()} Turn</div>
             <div className="board">
-                <h2>Player Board</h2>
-                {super.render()}
+                {[0, 1, 2].map((row) => (
+                    <div key={row} className="board-row">
+                        {[0, 1, 2].map((col) => (
+                            <Square
+                                key={col}
+                                value={squares[row * 3 + col]}
+                                onSquareClick={() => handleClick(row * 3 + col)}
+                            />
+                        ))}
+                    </div>
+                ))}
             </div>
-        );
-    }
+        </>
+    );
 }
 
 export default PlayerBoard;

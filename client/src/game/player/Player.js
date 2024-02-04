@@ -8,7 +8,7 @@ class Player {
         return this.username;
     }
 
-    getPointerId() {
+    getPointer() {
         return this.pointerId;
     }
 }

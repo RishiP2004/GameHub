@@ -3,7 +3,7 @@ import './UserLogin.css';
 import axios from "axios";
 import { useHistory } from 'react-router-dom';
 
-function UserLogin({ setLoggedIn, setUsername }) {
+const UserLogin = ( setLoggedIn ) => {
     const [usernameInput, setUsernameInput] = useState('');
     const [password, setPassword] = useState('');
     const history = useHistory();
@@ -16,7 +16,6 @@ function UserLogin({ setLoggedIn, setUsername }) {
                 const token = response.data.token;
                 document.cookie = `authToken=${token}; path=/`;
                 setLoggedIn(true);
-                setUsername(usernameInput);
                 localStorage.setItem('user', JSON.stringify(usernameInput));
                 history.push('/');
             }).catch((error) => {

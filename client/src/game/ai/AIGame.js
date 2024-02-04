@@ -1,50 +1,39 @@
-import React from "react";
+import React, {useState} from "react";
 import AIBoard from "./AIBoard";
-import Game from "../Game";
+import '../Game.css';
 
-class AIGame extends Game {
-    constructor(props) {
-        super(props);
-        this.username = JSON.parse(localStorage.getItem('user'));
-        this.selectedPointer = props.selectedPointer;
-        this.state = {
-            squares: Array(9).fill(null),
-            selectedPointer: 0,
-            playerTurn: 0,
-        };
-    }
+const AIGame = () => {
+    const [selectedPointer, setSelectedPointer] = useState(null);
+    const [history, setHistory] = useState([Array(9).fill(null)]);
+    const [currentMove, setCurrentMove] = useState(0);
+    const currentSquares = history[currentMove];
 
-    async handleClick() {
-        const nextSquares = this.state.squares.slice();
-        await super.handlePlay(nextSquares);
+    const handlePlay = (nextSquares) => {
+        const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
+        setHistory(nextHistory);
+        setCurrentMove(nextHistory.length - 1);
+    };
 
-        this.setState({
-            squares: nextSquares,
-            selectedPointer: this.state.selectedPointer === 0 ? 1 : 0,
-            playerTurn: 1,
-        });
-    }
+    const handlePointerSelect = (pointerId) => {
+        if (selectedPointer === null) setSelectedPointer(pointerId);
+    };
 
-    render() {
-        return (
-            <div>
-                {super.render()}
-                <div className="game-board">
-                    <AIBoard
-                        username={this.username}
-                        selectedPointer={this.selectedPointer}
-                        squares={this.state.squares}
-                        onPlay={(nextSquares) => this.handlePlay(nextSquares)}
-                    />
-                </div>
-                <div className="pointer-select">
-                    <h1>Select a pointer:</h1>
-                    <ol><span className="pointer-id">X <button onClick={() => this.setState({ selectedPointer: 0 })}></button></span></ol>
-                    <ol><span className="pointer-id">O <button onClick={() => this.setState({ selectedPointer: 1 })}></button></span></ol>
-                </div>
+    return  (
+        <div>
+            <div className="game-board">
+                <AIBoard
+                    selectedPointer={selectedPointer}
+                    squares={currentSquares}
+                    onPlay={(nextSquares) => handlePlay(nextSquares)}
+                />
             </div>
-        );
-    }
+            <div className="pointer-select">
+                <h1>Select a pointer:</h1>
+                <ol><span className="pointer-id">X <button onClick={() => handlePointerSelect(0)} disabled={selectedPointer !== null}></button></span></ol>
+                <ol><span className="pointer-id">O <button onClick={() => handlePointerSelect(1)} disabled={selectedPointer !== null}></button></span></ol>
+            </div>
+        </div>
+    );
 }
 
 export default AIGame;

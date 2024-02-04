@@ -1,7 +1,7 @@
 import React from "react";
 import Queue from "../game/queue/Queue";
 
-function GameSelection() {
+const GameSelection = () => {
     return (
         <div>
             <Queue />
