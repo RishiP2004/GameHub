@@ -4,7 +4,6 @@ import axios from "axios";
 import { useHistory } from 'react-router-dom';
 
 function UserLogin({ setLoggedIn, setUsername }) {
-    console.log('Rendering UserLogin component');
     const [usernameInput, setUsernameInput] = useState('');
     const [password, setPassword] = useState('');
     const history = useHistory();
@@ -18,6 +17,7 @@ function UserLogin({ setLoggedIn, setUsername }) {
                 document.cookie = `authToken=${token}; path=/`;
                 setLoggedIn(true);
                 setUsername(usernameInput);
+                localStorage.setItem('user', JSON.stringify(usernameInput));
                 history.push('/');
             }).catch((error) => {
             console.error('Login failed:', error.response.data.error);

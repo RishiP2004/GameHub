@@ -1,16 +1,16 @@
-// App.js
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
 import TopPlayers from './display/TopPlayers';
 import PlayerStats from "./display/PlayerStats";
 import UserLogin from "./login/UserLogin";
-import Game from "./game/Game";
 import axios from "axios";
+import GameSelection from "./selection/GameSelection";
+import AIGame from "./game/ai/AIGame";
+import PlayerGame from "./game/player/PlayerGame";
 
 function App() {
     const [loggedIn, setLoggedIn] = useState(false);
-    const [username, setUsername] = useState(null);
-    /**
+
     useEffect(() => {
         const authToken = document.cookie.replace(/(?:(?:^|.*;\s*)authToken\s*=\s*([^;]*).*$)|^.*$/, '$1');
 
@@ -23,38 +23,36 @@ function App() {
                 setLoggedIn((prevLoggedIn) => !prevLoggedIn);
                 const decodedToken = decodeURIComponent(atob(authToken.split('.')[1]));
                 const { username } = JSON.parse(decodedToken);
-                setUsername(username);
+                localStorage.setItem('user', JSON.stringify(username));
             }).catch((error) => {
                 console.error('Token verification failed:', error);
             });
 
         }
-    }, [setLoggedIn, setUsername]);
-    */
+    }, [setLoggedIn]);
     return (
         <Router>
             <Switch>
-                <Route path="/login" exact element={<UserLogin setLoggedIn={setLoggedIn} setUsername={setUsername} />} />
-                {loggedIn ? (
-                    <LoggedInRoutes username={username} />
-                ) : (
-                    <Redirect to="/login" />
-                )}
+                <PlayerStats />
+                <TopPlayers />
+                <Route path="/game/:player1/:player2">
+                    <PlayerGame />
+                </Route>
+                <Route path="/ai-game">
+                    <AIGame />
+                </Route>
+                <Route path="/" exact>
+                    {loggedIn ? (
+                        <GameSelection />
+                    ) : (
+                        <UserLogin setLoggedIn={setLoggedIn} />
+                    )}
+                </Route>
             </Switch>
         </Router>
     );
 }
 
-
-
-function LoggedInRoutes({ username }) {
-    return (
-        <React.Fragment>
-            <Route path="/" element={<PlayerStats username={username} />} />
-            <Route path="/top-players" element={<TopPlayers />} />
-            <Route path="/game" element={<Game username={username} />} />
-        </React.Fragment>
-    );
-}
+ReactDOM.render(<App />, document.getElementById('root'));
 
 export default App;
