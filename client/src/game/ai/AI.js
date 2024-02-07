@@ -1,3 +1,5 @@
+import OpenAI from 'openai';
+
 class AI {
     static calculateWinner(squares) {
         const lines = [
@@ -30,16 +32,27 @@ class AI {
         if (selectedPointer === 0) newPointer = 'O';
         else newPointer = 'X';
 
-        const emptySquares = nextSquares.reduce((acc, val, idx) => {
-            if (!val) acc.push(idx);
-            return acc;
-        }, []);
+		try {
+			const openai = OpenAI();
 
-        //TODO: AI logic for move
-        const aiMove = emptySquares[0];
-        nextSquares[aiMove] = newPointer;
+			const prompt = `Given the Tic Tac Toe board ${nextSquares} and the player's symbol ${newPointer}, what is the best move?`;
 
-        onPlay(nextSquares);
+			const response = await openai.ChatCompletion.create({
+				model: 'davinci',
+				messages: [
+					{ role: 'system', content: 'You are a helpful assistant.' },
+					{ role: 'user', content: prompt },
+				],
+				max_tokens: 1,
+			}, { headers: { 'Authorization': `Bearer ${API_KEY}` } });
+			const aiMove = response.data.choices[0].message.content.trim();
+
+			nextSquares[aiMove] = newPointer;
+
+			onPlay(nextSquares);
+		} catch (error) {
+			console.error('Error making OpenAI API request:', error);
+		}
     }
 }
 
