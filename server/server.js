@@ -18,14 +18,19 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use(express.static(path.join(__dirname, 'client', 'build')));
-
+/**
+ * Verify token API
+ *
+ * Checks if valid token through
+ * JWT and sends back status
+ * accordingly
+ */
 app.get('/verify-token', (req, res) => {
     const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
 
     if (!token) {
         return res.status(401).json({ error: 'Unauthorized' });
     }
-
     jwt.verify(token, secretKey, (err) => {
         if (err) {
             return res.status(403).json({ error: 'Forbidden' });
@@ -33,7 +38,14 @@ app.get('/verify-token', (req, res) => {
         res.sendStatus(200);
     });
 });
-
+/**
+ * Authentication API
+ *
+ * Checks if username and password
+ * entries match in database and sends
+ * back a 1h expiring JWT token, with
+ * set cookie
+ */
 app.post('http://localhost:3001/login', async (req, res) => {
     const { username, password } = req.body;
 
@@ -58,7 +70,12 @@ app.post('http://localhost:3001/login', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
-
+/**
+ * Player wins API
+ *
+ * Finds the amount of wins a username
+ * has and returns status accordingly
+ */
 app.get('/player-wins/:username', async (req, res) => {
     try {
         const { username } = req.params;
@@ -79,7 +96,12 @@ app.get('/player-wins/:username', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
-
+/*
+ * Top Wins API
+ *
+ * Sends back Top Wins based on usernames
+ * Ordered by top 10 ascending
+ */
 app.get('/top-wins', async (req, res) => {
     try {
         const topPlayers = await knex('players')
@@ -93,7 +115,11 @@ app.get('/top-wins', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
-
+/**
+ * Update wins API
+ *
+ * Updates a user's win count
+ */
 app.put('/api/player/:username/updateWins', async (req, res) => {
     const { username } = req.params;
 
@@ -116,6 +142,7 @@ app.put('/api/player/:username/updateWins', async (req, res) => {
         res.status(500).json({ message: 'Error updating win count', error: error.message });
     }
 });
+
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'client', 'public', 'index.html'));
 });

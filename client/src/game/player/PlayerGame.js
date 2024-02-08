@@ -3,6 +3,14 @@ import PlayerBoard from "./PlayerBoard";
 import { useParams } from "react-router-dom";
 import '../Game.css';
 
+/**
+ * Overseer of the PlayerBoard and handles
+ * history, and current moves
+ * Essentially a Manager
+ *
+ * @returns {JSX.Element}
+ * @constructor
+ */
 const PlayerGame = () => {
     const { player1, player2 } = useParams();
     const [history, setHistory] = useState([Array(9).fill(null)]);

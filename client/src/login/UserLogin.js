@@ -3,6 +3,17 @@ import './UserLogin.css';
 import axios from "axios";
 import { useHistory } from 'react-router-dom';
 
+/**
+ * Login component of the website
+ * Considers server API to check if
+ * username and password are correct
+ * from database. Stores cookie and token
+ * once validated
+ *
+ * @param setLoggedIn
+ * @returns {JSX.Element}
+ * @constructor
+ */
 const UserLogin = ( setLoggedIn ) => {
     const [usernameInput, setUsernameInput] = useState('');
     const [password, setPassword] = useState('');

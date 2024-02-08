@@ -2,6 +2,13 @@ import React, {useEffect, useState} from 'react';
 import axios from "axios";
 import './TopPlayers.css';
 
+/**
+ * Element to display the top players
+ * from server-side top calculation api
+ *
+ * @returns {JSX.Element}
+ * @constructor
+ */
 function TopPlayers() {
     const [topPlayers, setTopPlayers] = useState([]);
 

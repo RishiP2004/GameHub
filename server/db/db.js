@@ -5,7 +5,9 @@ const knex = require('knex')({
     },
     useNullAsDefault: true,
 });
-
+/**
+ * Database table setup
+ */
 knex.schema.createTable('player', (table) => {
     table.increments('id').primaryKey()
     table.string('playerName').useNullAsDefault(false);

@@ -3,36 +3,58 @@ import { updateWins } from "../../display/PlayerStats";
 import {calculateWinner, Square} from "../GameUtils";
 import getAIMove from "./AI";
 import '../Board.css';
+import {useHistory} from "react-router-dom";
 
+/**
+ * Handles the AI Board element where the game is
+ * being played. Handles clicking the board squares
+ * as well as checking if a winner has been found
+ *
+ * @param selectedPointer
+ * @param squares
+ * @param onPlay
+ * @returns {JSX.Element}
+ * @constructor
+ */
 const AIBoard = ({selectedPointer, squares, onPlay}) => {
     const username = JSON.parse(localStorage.getItem('user'));
-    const [ playerTurn, setPlayerTurn ]= useState(0);
-    let status;
+    const [playerTurn, setPlayerTurn] = useState(0);
+    const history = useHistory();
+
+    let status = playerTurn === selectedPointer ? 'Your Turn' : 'AI Turn';
 
     async function handleClick(i) {
-        const nextSquares = squares.slice();
-        const winner = calculateWinner(nextSquares);
-
-        if (calculateWinner(squares) || squares[i]) return;
-
-        if (playerTurn === 0) {
-            nextSquares[i] = selectedPointer === 0 ? 'X' : 'O';
-            setPlayerTurn(1);
-        } else {
-            await getAIMove(squares, selectedPointer, onPlay);
-            setPlayerTurn(0);
+        if (squares[i] || calculateWinner(squares)) {
+            return;
         }
+        const nextSquares = squares.slice();
+        nextSquares[i] = selectedPointer === 0 ? 'X' : 'O';
         onPlay(nextSquares);
 
-        if (winner) {
-            status = 'Winner: ' + (winner === selectedPointer ? 'Player' : 'AI');
+        const winner = calculateWinner(nextSquares);
 
-            const isPlayerWinner = winner === selectedPointer;
+        if (!winner) {
+            await getAIMove(nextSquares, selectedPointer, onPlay);
+        }
+
+        const newWinner = calculateWinner(nextSquares);
+
+        if (!winner && nextSquares.every((square) => square !== null)) {
+            status = 'Draw!';
+            history.push('/');
+            return;
+        }
+
+        if (newWinner) {
+            const isPlayerWinner = newWinner === selectedPointer;
+            status = isPlayerWinner ? 'Winner: Player' : 'Winner: AI';
+
             if (isPlayerWinner) {
                 updateWins(username).then(() => console.log("Updated wins"));
             }
+            history.push('/');
         } else {
-            status = 'Your Turn';
+            setPlayerTurn((prevPlayerTurn) => 1 - prevPlayerTurn);
         }
     }
 

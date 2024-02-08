@@ -2,6 +2,14 @@ import React, {useState} from "react";
 import AIBoard from "./AIBoard";
 import '../Game.css';
 
+/**
+ * Overseer of the AIBoard and handles
+ * history, pointer select and current moves
+ * Essentially a Manager
+ *
+ * @returns {JSX.Element}
+ * @constructor
+ */
 const AIGame = () => {
     const [selectedPointer, setSelectedPointer] = useState(null);
     const [history, setHistory] = useState([Array(9).fill(null)]);

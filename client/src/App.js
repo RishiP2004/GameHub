@@ -8,6 +8,14 @@ import GameSelection from "./selection/GameSelection";
 import AIGame from "./game/ai/AIGame";
 import PlayerGame from "./game/player/PlayerGame";
 
+/**
+ * Main front-end handling file
+ * Checks for auto logins with tokens
+ * from server API, and has redirects
+ * to pages accordingly
+ *
+ * @constructor
+ */
 function App() {
     const [loggedIn, setLoggedIn] = useState(false);
 

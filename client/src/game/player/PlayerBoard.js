@@ -1,19 +1,32 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { updateWins } from "../../display/PlayerStats";
-import {calculateWinner, Square} from "../GameUtils";
-import {useHistory} from "react-router-dom";
+import { calculateWinner, Square } from "../GameUtils";
+import { useHistory } from "react-router-dom";
 import '../Board.css';
 
-const PlayerBoard = (player1, player2, squares, onPlay) => {
-    const history = useHistory()
+/**
+ * Handles the Player Board element where the game is
+ * being played. Handles clicking the board squares
+ * as well as checking if a winner has been found
+ * between two players
+ *
+ * @param player1
+ * @param player2
+ * @param squares
+ * @param onPlay
+ * @returns {JSX.Element}
+ * @constructor
+ */
+const PlayerBoard = ({ player1, player2, squares, onPlay }) => {
+    const history = useHistory();
+    const [playerTurn, setPlayerTurn] = useState(0);
 
     const handleClick = (i) => {
-        const { playerTurn, setPlayerTurn } = useState();
         const nextSquares = squares.slice();
-        const winner = calculateWinner(nextSquares);
-        // 0 is player1, 1 is player2
-        if (calculateWinner(squares) || squares[i]) return;
 
+        if (calculateWinner(nextSquares) || squares[i]) {
+            return;
+        }
         if (playerTurn === 0) {
             nextSquares[i] = player1.getPointer() === 0 ? 'X' : 'O';
             setPlayerTurn(1);
@@ -23,14 +36,29 @@ const PlayerBoard = (player1, player2, squares, onPlay) => {
         }
         onPlay(nextSquares);
 
-        if (winner) {
-            updateWins(player1.getPointer() === 0 ? player1.getUsername() : player2.getUsername()).then(() => history.push('/'));
+        const newWinner = calculateWinner(nextSquares);
+
+        if (newWinner) {
+            const winnerPlayer = newWinner === player1.getPointer() ? player1 : player2;
+            updateWins(winnerPlayer.getUsername()).then(() => history.push('/'));
+        } else if (nextSquares.every((square) => square !== null)) {
+            history.push('/');
         }
     }
 
+    const getStatusMessage = () => {
+        if (calculateWinner(squares)) {
+            return `${player1.getName()} Wins`;
+        } else if (squares.every((square) => square !== null)) {
+            return 'Draw!';
+        } else {
+            return `${playerTurn === 0 ? player1.getName() : player2.getName()} Turn`;
+        }
+    };
+
     return (
         <>
-            <div className="status">{player1.getName()} Turn</div>
+            <div className="status">{getStatusMessage()}</div>
             <div className="board">
                 {[0, 1, 2].map((row) => (
                     <div key={row} className="board-row">

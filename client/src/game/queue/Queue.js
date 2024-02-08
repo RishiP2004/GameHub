@@ -1,6 +1,15 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 
+/**
+ * Simple Queue structure to handle
+ * Player vs Player selection
+ * Redirects to a game with the two players
+ * once matched
+ *
+ * @returns {JSX.Element}
+ * @constructor
+ */
 const Queue = () => {
     const [queue, setQueue] = useState([]);
     const history = useHistory();
@@ -27,6 +36,7 @@ const Queue = () => {
             }
         } else {
             console.error("Username not found in localStorage.");
+            history.push('/')
         }
     };
 

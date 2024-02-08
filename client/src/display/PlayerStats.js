@@ -2,6 +2,12 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './PlayerStats.css';
 
+/**
+ * Updates the win count of a user
+ * by calling server-side api
+ *
+ * @param {string} username
+ */
 export async function updateWins(username) {
     try {
         await axios.put(`/api/player/${username}/updateWins`);
@@ -11,6 +17,13 @@ export async function updateWins(username) {
     }
 }
 
+/**
+ * Element to display the user's wins
+ * based on count from server-side api
+ *
+ * @returns {JSX.Element}
+ * @constructor
+ */
 function PlayerStats() {
     const [myWins, setMyWins] = useState(0);
 

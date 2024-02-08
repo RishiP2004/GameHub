@@ -1,5 +1,12 @@
 import React from "react"
 
+/**
+ * Calculates the winner of the board
+ * based on X or O, or null if none
+ *
+ * @param squares
+ * @returns {null|*}
+ */
 export function calculateWinner(squares) {
     const lines = [
         [0, 1, 2],
@@ -20,8 +27,15 @@ export function calculateWinner(squares) {
     }
     return null;
 }
-
-
+/**
+ * Square instance of the board used
+ * for PlayerBoard and AIBoard
+ *
+ * @param value
+ * @param onSquareClick
+ * @returns {JSX.Element}
+ * @constructor
+ */
 export function Square({ value, onSquareClick }) {
     return (
         <button className="square" onClick={onSquareClick}>

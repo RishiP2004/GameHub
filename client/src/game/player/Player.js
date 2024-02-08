@@ -1,3 +1,6 @@
+/**
+ * Player object for users playing
+ */
 class Player {
     constructor({username, pointerId}) {
         this.username = username;

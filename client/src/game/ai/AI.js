@@ -3,15 +3,21 @@ import {calculateWinner} from "../GameUtils";
 
 const API_KEY = "API_KEY";
 
+/**
+ * Calculates the best AI move based on
+ * OpenAI's calculated response and
+ * completes the move accordingly
+ *
+ * @param squares
+ * @param selectedPointer
+ * @param onPlay
+ * @returns {Promise<void>}
+ */
 async function getAIMove(squares, selectedPointer, onPlay) {
     if (calculateWinner(squares)) return;
 
     const nextSquares = squares.slice();
-
-    let newPointer = '';
-
-    if (selectedPointer === 0) newPointer = 'O';
-    else newPointer = 'X';
+    const newPointer = selectedPointer === 0 ? 'O' : 'X';
 
     try {
         const openai = OpenAI();
