@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
 import TopPlayers from './display/TopPlayers';
 import PlayerStats from "./display/PlayerStats";
-import UserLogin from "./login/UserLogin";
+import UserLogin from "./auth/UserLogin";
 import axios from "axios";
 import GameSelection from "./selection/GameSelection";
 import AIGame from "./game/ai/AIGame";
 import PlayerGame from "./game/player/PlayerGame";
+import GuestOption from "./auth/GuestOption";
+import UserRegister from "./auth/UserRegister";
 
 /**
  * Main front-end handling file
@@ -64,16 +66,20 @@ function App() {
 					<Redirect to="/" />
 				  )}
 				</Route>
-				<Route path="/" exact>
-				  {loggedIn ? (
-					<>
-					  <PlayerStats />
-					  <GameSelection />
-					</>
-				  ) : (
-					<UserLogin setLoggedIn={setLoggedIn} />
-				  )}
-				</Route>
+                <Route path="/" exact>
+                    {loggedIn ? (
+                        <>
+                            <PlayerStats />
+                            <GameSelection />
+                        </>
+                    ) : (
+                        <>
+                            <UserLogin setLoggedIn={setLoggedIn} />
+                            <UserRegister setLoggedIn={setLoggedIn} />
+                            <GuestOption />
+                        </>
+                    )}
+                </Route>
 			</Switch>
         </Router>
     );

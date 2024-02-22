@@ -39,6 +39,42 @@ app.get('/verify-token', (req, res) => {
     });
 });
 /**
+ * Register API
+ *
+ * Checks if username entry in
+ * database and sends back a 1h
+ * expiring JWT token, with set cookie
+ */
+app.post('http://localhost:3001/register', async (req, res) => {
+    const { username, password } = req.body;
+
+    try {
+        const existingUser = await knex('players').where({ username }).first();
+
+        if (existingUser) {
+            return res.status(401).json({ error: 'Username exists' });
+        }
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const [userId] = await knex('players').insert({
+            username,
+            password: hashedPassword,
+        });
+
+        const newUser = await knex('players').where({ id: userId }).first();
+
+        const token = jwt.sign(
+            { userId: newUser.id, username: newUser.username },
+            secretKey,
+            { expiresIn: '1h' }
+        );
+        res.cookie('authToken', token, { httpOnly: true });
+        res.json({ token });
+    } catch (error) {
+        console.error('Error during register:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+/**
  * Authentication API
  *
  * Checks if username and password
@@ -60,7 +96,11 @@ app.post('http://localhost:3001/login', async (req, res) => {
             if (err || !passwordMatch) {
                 return res.status(401).json({ error: 'Invalid username or password' });
             }
-            const token = jwt.sign({ userId: user.id, username: user.username }, secretKey, { expiresIn: '1h' });
+            const token = jwt.sign(
+                { userId: user.id, username: user.username },
+                secretKey,
+                { expiresIn: '1h' }
+            );
 
             res.cookie('authToken', token, { httpOnly: true });
             res.json({ token });
