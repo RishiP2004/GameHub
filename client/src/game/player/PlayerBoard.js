@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { updateWins } from "../../display/PlayerStats";
 import { calculateWinner, Square } from "../GameUtils";
 import { useHistory } from "react-router-dom";
 import '../Board.css';
@@ -40,7 +39,7 @@ const PlayerBoard = ({ player1, player2, squares, onPlay }) => {
 
         if (newWinner) {
             const winnerPlayer = newWinner === player1.getPointer() ? player1 : player2;
-            updateWins(winnerPlayer.getUsername()).then(() => history.push('/'));
+            winnerPlayer.updateWins();
         } else if (nextSquares.every((square) => square !== null)) {
             history.push('/');
         }

@@ -33,10 +33,14 @@ const UserLogin = ( setLoggedIn ) => {
             console.error('Login failed:', error.response.data.error);
         });
     };
-
+    const handleSubmit2 = (e) => {
+        e.preventDefault();
+        localStorage.setItem('guest', 0);
+        history.push('/');
+    };
     return (
         <div className="login-container">
-            <h1>Please Log In</h1>
+            <h1>Log In</h1>
             <form onSubmit={handleSubmit}>
                 <label>
                     <p>Username</p>
@@ -50,6 +54,7 @@ const UserLogin = ( setLoggedIn ) => {
                     <button type="submit">Submit</button>
                 </div>
             </form>
+            <button type="guest" onSubmit={handleSubmit2}>Play as Guest</button>
         </div>
     );
 }

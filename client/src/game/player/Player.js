@@ -1,10 +1,13 @@
+import {updateWins} from "../../display/PlayerStats";
+
 /**
  * Player object for users playing
  */
-class Player {
-    constructor({username, pointerId}) {
+export class Player {
+    constructor({username, pointerId, isGuest}) {
         this.username = username;
         this.pointerId = pointerId;
+        this.isGuest = isGuest;
     }
 
     getUsername() {
@@ -13,5 +16,14 @@ class Player {
 
     getPointer() {
         return this.pointerId;
+    }
+
+    isGuest() {
+        return this.isGuest;
+    }
+
+    updateWins() {
+        if(this.isGuest()) return;
+        updateWins(this.getUsername()).then(() => history.push('/'));
     }
 }

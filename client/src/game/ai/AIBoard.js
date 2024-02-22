@@ -18,6 +18,8 @@ import {useHistory} from "react-router-dom";
  */
 const AIBoard = ({selectedPointer, squares, onPlay}) => {
     const username = JSON.parse(localStorage.getItem('user'));
+    const guestMode = JSON.parse(localStorage.getItem('user')) === 0;
+
     const [playerTurn, setPlayerTurn] = useState(0);
     const history = useHistory();
 
@@ -44,12 +46,11 @@ const AIBoard = ({selectedPointer, squares, onPlay}) => {
             history.push('/');
             return;
         }
-
         if (newWinner) {
             const isPlayerWinner = newWinner === selectedPointer;
             status = isPlayerWinner ? 'Winner: Player' : 'Winner: AI';
 
-            if (isPlayerWinner) {
+            if (isPlayerWinner && guestMode === false) {
                 updateWins(username).then(() => console.log("Updated wins"));
             }
             history.push('/');

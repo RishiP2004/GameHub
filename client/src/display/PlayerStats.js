@@ -26,6 +26,8 @@ export async function updateWins(username) {
  */
 function PlayerStats() {
     const [myWins, setMyWins] = useState(0);
+    const guestMode = JSON.parse(localStorage.getItem('user')) === 0;
+    if(guestMode) return null;
 
     useEffect(() => {
         let username = JSON.parse(localStorage.getItem('user'));

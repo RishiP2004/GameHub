@@ -19,7 +19,10 @@ const Queue = () => {
     };
 
     const handleClick = () => {
-        const storedUsername = localStorage.getItem("user");
+        let storedUsername = localStorage.getItem("user");
+        const guestMode = localStorage.getItem('user') === 0;
+
+        if (guestMode) storedUsername = "guest_" + (Math.floor(100000 + Math.random() * 900000))
 
         if (storedUsername) {
             setQueue([...queue, storedUsername]);

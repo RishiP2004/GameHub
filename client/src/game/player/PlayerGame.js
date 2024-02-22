@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import PlayerBoard from "./PlayerBoard";
 import { useParams } from "react-router-dom";
 import '../Game.css';
+import {Player} from "./Player";
 
 /**
  * Overseer of the PlayerBoard and handles
@@ -17,8 +18,10 @@ const PlayerGame = () => {
     const [currentMove, setCurrentMove] = useState(0);
     const currentSquares = history[currentMove];
 
-    const player1Instance = new Player({ username: player1, pointerId: 0 });
-    const player2Instance = new Player({ username: player2, pointerId: 0 });
+    const guestMode = JSON.parse(localStorage.getItem('user')) === 0;
+
+    const player1Instance = new Player({ username: player1, pointerId: 0, isGuest: guestMode });
+    const player2Instance = new Player({ username: player2, pointerId: 0, isGuest: guestMode });
 
     const handlePlay = (nextSquares) => {
         const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];

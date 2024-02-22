@@ -20,13 +20,15 @@ function App() {
     const [loggedIn, setLoggedIn] = useState(false);
 
 	const user = JSON.parse(localStorage.getItem("user"));
+    const guestMode = JSON.parse(localStorage.getItem("user")) === 0;
 	const authToken = document.cookie.replace(/(?:(?:^|.*;\s*)authToken\s*=\s*([^;]*).*$)|^.*$/, '$1');
 
-	if(!user || !authToken) {
+	if(!user || !authToken || !guestMode) {
 		setLoggedIn(false);
 		return;
 	}
     useEffect(() => {
+        if(guestMode) return
 		axios.get('http://localhost:3001/verify-token', {
             headers: {
                 Authorization: `Bearer ${authToken}`,
