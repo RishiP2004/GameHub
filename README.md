@@ -2,7 +2,7 @@
 
 This project is to learn Node and React.
 
-Fun little game being made for user vs AI or Player using 
+Fun little game for user vs AI or Player using 
 Node, React, SQLite, Express, Axios and Knex 
 
 Features 
