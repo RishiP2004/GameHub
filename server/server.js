@@ -45,35 +45,36 @@ app.get('/verify-token', (req, res) => {
  * database and sends back a 1h
  * expiring JWT token, with set cookie
  */
-app.post('http://localhost:3001/register', async (req, res) => {
-    const { username, password } = req.body;
+app.post('/register', async (req, res) => {
+    const {username, password} = req.body;
 
     try {
-        const existingUser = await knex('players').where({ username }).first();
+        const existingUser = await knex('player').where({username}).first();
 
         if (existingUser) {
-            return res.status(401).json({ error: 'Username exists' });
+            return res.status(401).json({error: 'Username exists'});
         }
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const [userId] = await knex('players').insert({
+        const [userId] = await knex('player').insert({
             username,
             password: hashedPassword,
         });
 
-        const newUser = await knex('players').where({ id: userId }).first();
+        const newUser = await knex('player').where({id: userId}).first();
 
         const token = jwt.sign(
-            { userId: newUser.id, username: newUser.username },
+            {userId: newUser.id, username: newUser.username},
             secretKey,
-            { expiresIn: '1h' }
+            {expiresIn: '1h'}
         );
-        res.cookie('authToken', token, { httpOnly: true });
-        res.json({ token });
+        res.cookie('authToken', token, {httpOnly: true});
+        res.json({token});
     } catch (error) {
         console.error('Error during register:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        res.status(500).json({error: 'Internal Server Error'});
     }
+});
 /**
  * Authentication API
  *
@@ -82,29 +83,27 @@ app.post('http://localhost:3001/register', async (req, res) => {
  * back a 1h expiring JWT token, with
  * set cookie
  */
-app.post('http://localhost:3001/login', async (req, res) => {
+app.post('/login', async (req, res) => {
     const { username, password } = req.body;
 
     try {
-        const user = await knex('players').where({ username }).first();
+        const user = await knex('player').where({ username }).first();
 
         if (!user) {
             return res.status(401).json({ error: 'Invalid username or password' });
         }
+        const passwordMatch = await bcrypt.compare(password, user.password);
+        if (!passwordMatch) {
+            return res.status(401).json({ error: 'Invalid username or password' });
+        }
+        const token = jwt.sign(
+            { userId: user.id, username: user.username },
+            secretKey,
+            { expiresIn: '1h' }
+        );
 
-        bcrypt.compare(password, user.password, (err, passwordMatch) => {
-            if (err || !passwordMatch) {
-                return res.status(401).json({ error: 'Invalid username or password' });
-            }
-            const token = jwt.sign(
-                { userId: user.id, username: user.username },
-                secretKey,
-                { expiresIn: '1h' }
-            );
-
-            res.cookie('authToken', token, { httpOnly: true });
-            res.json({ token });
-        });
+        res.cookie('authToken', token, { httpOnly: true });
+        res.json({ token });
     } catch (error) {
         console.error('Error during login:', error);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -122,7 +121,7 @@ app.get('/player-wins/:username', async (req, res) => {
 
         const player = await knex('players')
             .select('username', 'wins')
-            .where(username)
+            .where({ username })
             .first();
 
         if (!player) {
@@ -144,7 +143,7 @@ app.get('/player-wins/:username', async (req, res) => {
  */
 app.get('/top-wins', async (req, res) => {
     try {
-        const topPlayers = await knex('players')
+        const topPlayers = await knex('player')
             .select('username', 'wins')
             .orderBy('wins', 'desc')
             .limit(10);

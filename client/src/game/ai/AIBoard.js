@@ -1,14 +1,15 @@
-import React, {useState} from "react";
-import { updateWins } from "../../display/PlayerStats";
-import {calculateWinner, Square} from "../GameUtils";
+import React, { useState } from "react";
+import { calculateWinner } from "../GameUtils";
 import getAIMove from "./AI";
 import '../Board.css';
-import {useHistory} from "react-router-dom";
+import { useHistory } from "react-router-dom";
+import { Square } from "../Square";
+import { updateWins } from "../../display/PlayerStats";
 
 /**
  * Handles the AI Board element where the game is
  * being played. Handles clicking the board squares
- * as well as checking if a winner has been found
+ * as well as checking if a winner has been found.
  *
  * @param selectedPointer
  * @param squares
@@ -16,7 +17,7 @@ import {useHistory} from "react-router-dom";
  * @returns {JSX.Element}
  * @constructor
  */
-const AIBoard = ({selectedPointer, squares, onPlay}) => {
+const AIBoard = ({ selectedPointer, squares, onPlay }) => {
     const username = JSON.parse(localStorage.getItem('user'));
     const guestMode = JSON.parse(localStorage.getItem('user')) === 0;
 
@@ -26,6 +27,9 @@ const AIBoard = ({selectedPointer, squares, onPlay}) => {
     let status = playerTurn === selectedPointer ? 'Your Turn' : 'AI Turn';
 
     async function handleClick(i) {
+        if (selectedPointer == null) {
+            return;
+        }
         if (squares[i] || calculateWinner(squares)) {
             return;
         }
@@ -41,7 +45,7 @@ const AIBoard = ({selectedPointer, squares, onPlay}) => {
 
         const newWinner = calculateWinner(nextSquares);
 
-        if (!winner && nextSquares.every((square) => square !== null)) {
+        if (!newWinner && nextSquares.every((square) => square !== null)) {
             status = 'Draw!';
             history.push('/');
             return;
@@ -50,7 +54,7 @@ const AIBoard = ({selectedPointer, squares, onPlay}) => {
             const isPlayerWinner = newWinner === selectedPointer;
             status = isPlayerWinner ? 'Winner: Player' : 'Winner: AI';
 
-            if (isPlayerWinner && guestMode === false) {
+            if (isPlayerWinner && !guestMode) {
                 updateWins(username).then(() => console.log("Updated wins"));
             }
             history.push('/');
@@ -60,7 +64,7 @@ const AIBoard = ({selectedPointer, squares, onPlay}) => {
     }
 
     return (
-        <>
+        <div className="game-container">
             <div className="status">{status}</div>
             <div className="board">
                 {[0, 1, 2].map((row) => (
@@ -75,8 +79,8 @@ const AIBoard = ({selectedPointer, squares, onPlay}) => {
                     </div>
                 ))}
             </div>
-        </>
+        </div>
     );
-}
+};
 
 export default AIBoard;

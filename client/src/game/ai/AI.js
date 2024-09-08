@@ -1,12 +1,12 @@
 import OpenAI from 'openai';
-import {calculateWinner} from "../GameUtils";
+import { calculateWinner } from "../GameUtils";
 
 const API_KEY = "API_KEY";
 
 /**
  * Calculates the best AI move based on
  * OpenAI's calculated response and
- * completes the move accordingly
+ * completes the move accordingly.
  *
  * @param squares
  * @param selectedPointer
@@ -33,7 +33,7 @@ async function getAIMove(squares, selectedPointer, onPlay) {
             max_tokens: 1,
         }, { headers: { 'Authorization': `Bearer ${API_KEY}` } });
 
-        const aiMove = response.data.choices[0].message.content.trim();
+        const aiMove = parseInt(response.data.choices[0].message.content.trim());
 
         nextSquares[aiMove] = newPointer;
 

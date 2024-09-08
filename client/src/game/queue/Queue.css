@@ -1,0 +1,26 @@
+.queue-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+.queue-button {
+    font-size: 1.2rem;
+    color: white;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin: 10px;
+}
+
+.queue-button:hover {
+    background-color: #0056b3;
+}
+
+.queue-button:focus {
+    outline: none;
+}

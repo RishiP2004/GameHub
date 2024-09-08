@@ -1,0 +1,40 @@
+.home-container {
+    text-align: center;
+    padding-top: 50px;
+}
+
+.home-buttons {
+    margin-top: 30px;
+}
+
+.home-button {
+    margin: 10px;
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.home-button:hover {
+    background-color: #2980b9;
+}
+
+.register-button {
+    background-color: #2ecc71;
+}
+
+.register-button:hover {
+    background-color: #27ae60;
+}
+
+.guest-button {
+    background-color: #f39c12;
+}
+
+.guest-button:hover {
+    background-color: #e67e22;
+}

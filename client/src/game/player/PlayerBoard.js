@@ -1,13 +1,14 @@
 import React, { useState } from "react";
-import { calculateWinner, Square } from "../GameUtils";
+import { calculateWinner } from "../GameUtils";
 import { useHistory } from "react-router-dom";
 import '../Board.css';
+import { Square } from "../Square";
 
 /**
  * Handles the Player Board element where the game is
  * being played. Handles clicking the board squares
  * as well as checking if a winner has been found
- * between two players
+ * between two players.
  *
  * @param player1
  * @param player2
@@ -38,25 +39,28 @@ const PlayerBoard = ({ player1, player2, squares, onPlay }) => {
         const newWinner = calculateWinner(nextSquares);
 
         if (newWinner) {
-            const winnerPlayer = newWinner === player1.getPointer() ? player1 : player2;
-            winnerPlayer.updateWins();
+            const winnerPlayer = newWinner === (player1.getPointer() === 'X' ? 0 : 1) ? player1 : player2;
+            winnerPlayer.updateWins(history);
+            history.push('/');
         } else if (nextSquares.every((square) => square !== null)) {
             history.push('/');
         }
-    }
+    };
 
     const getStatusMessage = () => {
-        if (calculateWinner(squares)) {
-            return `${player1.getName()} Wins`;
+        const winner = calculateWinner(squares);
+        if (winner) {
+            const winnerPlayer = winner === (player1.getPointer() === 'X' ? 'X' : 'O') ? player1 : player2;
+            return `${winnerPlayer.getUsername()} Wins!`;
         } else if (squares.every((square) => square !== null)) {
             return 'Draw!';
         } else {
-            return `${playerTurn === 0 ? player1.getName() : player2.getName()} Turn`;
+            return `${playerTurn === 0 ? player1.getUsername() : player2.getUsername()} Turn`;
         }
     };
 
     return (
-        <>
+        <div className="game-container">
             <div className="status">{getStatusMessage()}</div>
             <div className="board">
                 {[0, 1, 2].map((row) => (
@@ -71,8 +75,8 @@ const PlayerBoard = ({ player1, player2, squares, onPlay }) => {
                     </div>
                 ))}
             </div>
-        </>
+        </div>
     );
-}
+};
 
 export default PlayerBoard;

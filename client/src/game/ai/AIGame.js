@@ -1,11 +1,10 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import AIBoard from "./AIBoard";
-import '../Game.css';
+import "../Game.css";
 
 /**
  * Overseer of the AIBoard and handles
- * history, pointer select and current moves
- * Essentially a Manager
+ * history, pointer select and current moves.
  *
  * @returns {JSX.Element}
  * @constructor
@@ -26,19 +25,31 @@ const AIGame = () => {
         if (selectedPointer === null) setSelectedPointer(pointerId);
     };
 
-    return  (
-        <div>
+    return (
+        <div className="game-container">
             <div className="game-board">
                 <AIBoard
                     selectedPointer={selectedPointer}
                     squares={currentSquares}
-                    onPlay={(nextSquares) => handlePlay(nextSquares)}
+                    onPlay={handlePlay}
                 />
             </div>
             <div className="pointer-select">
                 <h1>Select a pointer:</h1>
-                <ol><span className="pointer-id">X <button onClick={() => handlePointerSelect(0)} disabled={selectedPointer !== null}></button></span></ol>
-                <ol><span className="pointer-id">O <button onClick={() => handlePointerSelect(1)} disabled={selectedPointer !== null}></button></span></ol>
+                <div className="pointer-options">
+                    <button
+                        className="pointer-button"
+                        onClick={() => handlePointerSelect(0)}
+                        disabled={selectedPointer !== null}>
+                        X
+                    </button>
+                    <button
+                        className="pointer-button"
+                        onClick={() => handlePointerSelect(1)}
+                        disabled={selectedPointer !== null}>
+                        O
+                    </button>
+                </div>
             </div>
         </div>
     );
