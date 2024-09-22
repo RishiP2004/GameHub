@@ -2,13 +2,13 @@ import React from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import './HomePage.css';
 
-function HomePage() {
+const HomePage = () => {
     const history = useHistory();
-
+    // Redirect to game selection if guest selected
     const handleGuestClick = (e) => {
         e.preventDefault();
         localStorage.setItem('user', JSON.stringify(0));
-        history.push('/');
+        history.push('/game-selection');
     };
 
     return (

@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './TopPlayers.css';
-
 /**
- * Element to display the top players based on the current game
+ * Show top players based on current game
+ * selected
  *
- * @param {Object} props
- * @param {string} props.selectedGame - The currently selected game to filter top players
- * @returns {JSX.Element}
+ * @param selectedGame
+ * @returns {Element}
  * @constructor
  */
-function TopPlayers({ selectedGame }) {
+const TopPlayers = (selectedGame) => {
     const [topPlayers, setTopPlayers] = useState([]);
 
     useEffect(() => {

@@ -10,8 +10,10 @@ import './Square.css';
  * @returns {JSX.Element}
  * @constructor
  */
-export const Square = ({ value, onSquareClick }) => {
+const Square = ({ value, onSquareClick }) => {
     return (
         <button className="square" onClick={onSquareClick}>{value}</button>
     );
 };
+
+export default Square

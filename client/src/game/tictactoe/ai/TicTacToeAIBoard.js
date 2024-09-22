@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { calculateWinner } from "../GameUtils";
-import getAIMove from "./TicTacToeAI";
+import { getAIMove } from "./TicTacToeAI";
 import '../Board.css';
 import { useHistory } from "react-router-dom";
-import { Square } from "../Square";
+import Square from "../Square";
 
 /**
  * Handles the AI Board element where the game is
@@ -17,9 +17,6 @@ import { Square } from "../Square";
  * @constructor
  */
 const TicTacToeAIBoard = ({ selectedPointer, squares, onPlay }) => {
-    const username = JSON.parse(localStorage.getItem('user'));
-    const guestMode = JSON.parse(localStorage.getItem('user')) === 0;
-
     const [playerTurn, setPlayerTurn] = useState(0);
     const history = useHistory();
 

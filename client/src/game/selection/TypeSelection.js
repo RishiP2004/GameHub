@@ -1,15 +1,15 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import Queue from '../game/queue/Queue';
+import Queue from '../queue/Queue';
 import './TypeSelection.css';
 
 const TypeSelection = ({ selectedGame }) => {
     const history = useHistory();
-
+    // AI Button selected
     const handleAIButtonClick = () => {
         history.push(`/game/${selectedGame}/ai`);
     };
-
+    // Back Button Selected
     const handleBack = () => {
         history.push('/game-selection');
     };

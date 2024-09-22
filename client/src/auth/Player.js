@@ -1,9 +1,9 @@
-import {updateWins} from "../display/PlayerStats";
+import {updateWins} from "../stats/PlayerStats";
 
 /**
- * Player objects for users playing
+ * Main Player object for users playing
  */
-export class Player {
+export default class Player {
     constructor(username) {
         this.username = username;
     }

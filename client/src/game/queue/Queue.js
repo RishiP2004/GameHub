@@ -1,13 +1,14 @@
 import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
 import './Queue.css';
-import {Connect4, TicTacToe} from "../GameIds";
+import { useHistory } from "react-router-dom";
+import { Connect4, TicTacToe } from "../GameIds";
 
 /**
- * Simple Queue structure to handle
- * Player vs Player selection
- * Redirects to a game with the two players
- * once matched
+ * Queue component for handling player vs player selection.
+ * Redirects to a game page with the two players once matched.
+ *
+ * @param {string} selectedGame - The selected game type (TicTacToe or Connect4).
+ * @returns {JSX.Element} The Queue component.
  */
 const Queue = ({ selectedGame }) => {
     const [ticTacToeQueue, setTicTacToeQueue] = useState([]);
@@ -15,14 +16,17 @@ const Queue = ({ selectedGame }) => {
     const [isQueueActive, setIsQueueActive] = useState(false);
     const history = useHistory();
 
+    // Redirect both players to the game with the provided player1 and player2.
     const startGame = (player1, player2) => {
         history.push(`/game/${selectedGame}/${player1}/${player2}`);
     };
 
+    // Handle the queue system when the queue button is clicked.
     const handleQueueClick = () => {
         let storedUsername = localStorage.getItem("user");
-        const guestMode = localStorage.getItem('user') === 0;
+        const guestMode = localStorage.getItem('user') === "0";
 
+        // Generate a unique guest username if in guest mode
         if (guestMode) storedUsername = "guest_" + (Math.floor(100000 + Math.random() * 900000));
 
         if (storedUsername) {
@@ -59,6 +63,7 @@ const Queue = ({ selectedGame }) => {
         }
     };
 
+    // Handle cancelling the queue
     const handleCancelQueue = () => {
         if (selectedGame === TicTacToe) {
             setTicTacToeQueue([]);
@@ -83,4 +88,4 @@ const Queue = ({ selectedGame }) => {
     );
 };
 
-export default Queue;
+export default Queue

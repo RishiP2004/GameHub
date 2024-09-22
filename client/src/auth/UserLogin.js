@@ -9,19 +9,19 @@ const UserLogin = ({ setLoggedIn }) => {
     const [error, setError] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const history = useHistory();
-
+    // Successful login
     const successMessage = () => (
         <div className="success" style={{ display: submitted ? 'block' : 'none' }}>
             <h1>Successfully logged in</h1>
         </div>
     );
-
+    // Non successful login
     const errorMessage = () => (
         <div className="error" style={{ display: error ? 'block' : 'none' }}>
             <h1>Please enter all the fields</h1>
         </div>
     );
-
+    // Handle submitting form
     const handleSubmit = (e) => {
         e.preventDefault();
         if (usernameInput === '' || password === '') {
@@ -29,7 +29,7 @@ const UserLogin = ({ setLoggedIn }) => {
             return;
         }
 
-        axios.post('/login', { username: usernameInput, password })
+        axios.post('/api/login', { username: usernameInput, password })
             .then((response) => {
                 const token = response.data.token;
                 document.cookie = `authToken=${token}; path=/`;
@@ -44,6 +44,10 @@ const UserLogin = ({ setLoggedIn }) => {
                 console.error('Login failed:', error.response?.data?.error || error.message);
                 setError(true);
             });
+    };
+
+    const handleBack = () => {
+        history.push('/game-selection');
     };
 
     return (
@@ -76,8 +80,11 @@ const UserLogin = ({ setLoggedIn }) => {
                     <button type="submit" className="btn">Submit</button>
                 </div>
             </form>
+            <div>
+                <button className="btn" onClick={handleBack}>Back</button>
+            </div>
         </div>
     );
 }
 
-export default UserLogin;
+export default UserLogin

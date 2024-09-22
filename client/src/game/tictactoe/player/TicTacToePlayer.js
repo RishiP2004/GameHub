@@ -1,4 +1,4 @@
-import {Player} from "../../../auth/Player";
+import Player from "../../../auth/Player";
 
 /**
  * Player objects for users playing TicTacToe

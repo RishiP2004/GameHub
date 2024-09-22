@@ -4,12 +4,11 @@ import './PlayerStats.css';
 
 /**
  * Updates the win count of a user
- * by calling server-side API
  *
  * @param {string} username
  * @param {string} game
  */
-export async function updateWins(username, game) {
+export const updateWins = async (username, game) => {
     try {
         await axios.put(`/api/player/${username}/updateWins`, { gameName: game });
         console.log(`Updated wins for ${game}`);
@@ -17,17 +16,14 @@ export async function updateWins(username, game) {
         console.error('Error updating win count:', error);
     }
 }
-
 /**
- * Element to display the user's wins
- * based on count from server-side API
+ * Receive and show Player's stats
  *
- * @param {Object} props
- * @param {string} props.gameName - The name of the game to fetch wins for
- * @returns {JSX.Element}
+ * @param gameName
+ * @returns {React.JSX.Element|null}
  * @constructor
  */
-function PlayerStats({ gameName }) {
+const PlayerStats = (gameName) => {
     const [myWins, setMyWins] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);

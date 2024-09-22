@@ -6,7 +6,7 @@ import '../TicTacToe.css';
 import { TicTacToePlayer } from "./TicTacToePlayer";
 
 // Create a connection to the server
-const socket = io("http://localhost:5000");
+const socket = io("http://localhost:3000");
 
 /**
  * Overseer of the TicTacToePlayerBoard

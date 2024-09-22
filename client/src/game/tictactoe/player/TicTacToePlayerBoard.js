@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { calculateWinner } from "../GameUtils";
 import { useHistory } from "react-router-dom";
 import '../Board.css';
-import { Square } from "../Square";
+import Square from "../Square";
 import {TicTacToe} from "../../GameIds";
 
 /**

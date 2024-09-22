@@ -5,7 +5,7 @@
  * @param squares
  * @returns {null|*}
  */
-export function calculateWinner(squares) {
+export const calculateWinner = (squares) => {
     const lines = [
         [0, 1, 2],
         [3, 4, 5],

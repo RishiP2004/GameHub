@@ -1,5 +1,5 @@
 import OpenAI from 'openai';
-import { calculateWinner } from "../GameUtils";
+import {calculateWinner} from "../GameUtils";
 
 const API_KEY = "API_KEY";
 
@@ -13,7 +13,7 @@ const API_KEY = "API_KEY";
  * @param onPlay
  * @returns {Promise<void>}
  */
-async function getAIMove(squares, selectedPointer, onPlay) {
+export const getAIMove = async (squares, selectedPointer, onPlay) => {
     if (calculateWinner(squares)) return;
 
     const nextSquares = squares.slice();
@@ -27,11 +27,11 @@ async function getAIMove(squares, selectedPointer, onPlay) {
         const response = await openai.ChatCompletion.create({
             model: 'davinci',
             messages: [
-                { role: 'system', content: 'You are a helpful assistant.' },
-                { role: 'user', content: prompt },
+                {role: 'system', content: 'You are a helpful assistant.'},
+                {role: 'user', content: prompt},
             ],
             max_tokens: 1,
-        }, { headers: { 'Authorization': `Bearer ${API_KEY}` } });
+        }, {headers: {'Authorization': `Bearer ${API_KEY}`}});
 
         const aiMove = parseInt(response.data.choices[0].message.content.trim());
 
@@ -42,5 +42,3 @@ async function getAIMove(squares, selectedPointer, onPlay) {
         console.error('Error making OpenAI API request:', error);
     }
 }
-
-export default getAIMove;

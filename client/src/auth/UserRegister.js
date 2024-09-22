@@ -22,19 +22,19 @@ const UserRegister = ({ setLoggedIn }) => {
     const [errorMsg, setErrorMsg] = useState('');
 
     const history = useHistory();
-
+    // Successful register
     const successMessage = () => (
         <div className="success" style={{ display: submitted ? "block" : "none" }}>
             <h1>Successfully registered</h1>
         </div>
     );
-
+    // Non successful register
     const errorMessage = () => (
         <div className="error" style={{ display: error ? "block" : "none" }}>
             <h1>{errorMsg}</h1>
         </div>
     );
-
+    // Validate the password
     const validatePassword = (password) => {
         const minLength = 8;
         const uppercaseRegex = /[A-Z]/;
@@ -59,7 +59,7 @@ const UserRegister = ({ setLoggedIn }) => {
         }
         return null;
     };
-
+    // Handles password being input
     const handlePasswordChange = (e) => {
         const passwordValue = e.target.value;
         setPassword(passwordValue);
@@ -74,7 +74,7 @@ const UserRegister = ({ setLoggedIn }) => {
             setErrorMsg('');
         }
     };
-
+    // Handle form submit
     const handleSubmit = (e) => {
         e.preventDefault();
 
@@ -109,6 +109,10 @@ const UserRegister = ({ setLoggedIn }) => {
             });
     };
 
+    const handleBack = () => {
+        history.push('/game-selection');
+    };
+
     return (
         <div className="register-container">
             <h1>Register</h1>
@@ -139,8 +143,11 @@ const UserRegister = ({ setLoggedIn }) => {
                     <button type="submit" className="btn">Submit</button>
                 </div>
             </form>
+            <div>
+                <button className="btn" onClick={handleBack}>Back</button>
+            </div>
         </div>
     );
 }
 
-export default UserRegister;
+export default UserRegister
