@@ -4,14 +4,15 @@ import './PlayerStats.css';
 
 /**
  * Updates the win count of a user
- * by calling server-side api
+ * by calling server-side API
  *
  * @param {string} username
+ * @param {string} game
  */
-export async function updateWins(username) {
+export async function updateWins(username, game) {
     try {
-        await axios.put(`/api/player/${username}/updateWins`);
-        console.log("Updated wins");
+        await axios.put(`/api/player/${username}/updateWins`, { gameName: game });
+        console.log(`Updated wins for ${game}`);
     } catch (error) {
         console.error('Error updating win count:', error);
     }
@@ -19,28 +20,49 @@ export async function updateWins(username) {
 
 /**
  * Element to display the user's wins
- * based on count from server-side api
+ * based on count from server-side API
  *
+ * @param {Object} props
+ * @param {string} props.gameName - The name of the game to fetch wins for
  * @returns {JSX.Element}
  * @constructor
  */
-function PlayerStats() {
+function PlayerStats({ gameName }) {
     const [myWins, setMyWins] = useState(0);
-    const guestMode = JSON.parse(localStorage.getItem('user')) === 0;
-    if(guestMode) return null;
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    const username = JSON.parse(localStorage.getItem('user'));
+    const guestMode = username === 0;
 
     useEffect(() => {
-        let username = JSON.parse(localStorage.getItem('user'));
-        if (username) {
-            axios.get(`/player-wins/${username}`)
-                .then(response => setMyWins(response.data.wins))
-                .catch(error => console.error('Error fetching wins:', error));
+        if (!guestMode && username && gameName) {
+            axios.get(`/player-wins/${username}?gameName=${gameName}`)
+                .then(response => {
+                    setMyWins(response.data.wins || 0);
+                    setLoading(false);
+                })
+                .catch(error => {
+                    console.error('Error fetching wins:', error);
+                    setError('Error fetching win data.');
+                    setLoading(false);
+                });
+        } else {
+            setLoading(false);
         }
-    });
+    }, [gameName, username, guestMode]);
+
+    if (guestMode) return null;
 
     return (
         <div className="player-stats">
-            <h1>My Wins: <span className="wins-value">{myWins}</span></h1>
+            {loading ? (
+                <p>Loading...</p>
+            ) : error ? (
+                <p>{error}</p>
+            ) : (
+                <h1>{gameName} Wins: <span className="wins-value">{myWins}</span></h1>
+            )}
         </div>
     );
 }

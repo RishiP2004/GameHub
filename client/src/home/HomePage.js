@@ -1,5 +1,5 @@
 import React from 'react';
-import {Link, useHistory} from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import './HomePage.css';
 
 function HomePage() {
@@ -13,7 +13,7 @@ function HomePage() {
 
     return (
         <div className="home-container">
-            <h1>Welcome to TicTacToePlus</h1>
+            <h1>Welcome to Simplistic Games</h1>
             <p>Choose an option below to start playing!</p>
             <div className="home-buttons">
                 <Link to="/login">

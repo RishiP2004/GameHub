@@ -1,8 +1,19 @@
 import React, { useState } from 'react';
 import './UserRegister.css';
-import axios from 'axios';
+import axios from "axios";
 import { useHistory } from 'react-router-dom';
 
+/**
+ * Register component of the website
+ * Handles user registration by validating
+ * input and communicating with server API
+ * to create a new user account
+ *
+ * @param {Object} props
+ * @param {Function} props.setLoggedIn - Function to set the logged-in state
+ * @returns {JSX.Element}
+ * @constructor
+ */
 const UserRegister = ({ setLoggedIn }) => {
     const [usernameInput, setUsernameInput] = useState("");
     const [password, setPassword] = useState("");
@@ -13,13 +24,13 @@ const UserRegister = ({ setLoggedIn }) => {
     const history = useHistory();
 
     const successMessage = () => (
-        <div className="success" style={{ display: submitted ? "" : "none" }}>
+        <div className="success" style={{ display: submitted ? "block" : "none" }}>
             <h1>Successfully registered</h1>
         </div>
     );
 
     const errorMessage = () => (
-        <div className="error" style={{ display: error ? "" : "none" }}>
+        <div className="error" style={{ display: error ? "block" : "none" }}>
             <h1>{errorMsg}</h1>
         </div>
     );
@@ -69,7 +80,7 @@ const UserRegister = ({ setLoggedIn }) => {
 
         if (usernameInput === "" || password === "") {
             setError(true);
-            setErrorMsg("Please enter all the fields");
+            setErrorMsg("Please enter all fields");
             return;
         }
 
@@ -80,20 +91,22 @@ const UserRegister = ({ setLoggedIn }) => {
             return;
         }
 
-        axios.post('http://localhost:3001/register', { usernameInput, password })
+        axios.post('/api/register', { username: usernameInput, password })
             .then((response) => {
                 const token = response.data.token;
                 document.cookie = `authToken=${token}; path=/`;
                 setLoggedIn(true);
                 localStorage.setItem('user', JSON.stringify(usernameInput));
-                history.push('/');
+                history.push('/game-selection');
                 setError(false);
                 setSubmitted(true);
-            }).catch((error) => {
-            setSubmitted(false);
-            setError(true);
-            setErrorMsg("Registration failed. Please try again.");
-        });
+            })
+            .catch((error) => {
+                console.error('Registration error:', error.response ? error.response.data : error.message);
+                setSubmitted(false);
+                setError(true);
+                setErrorMsg("Registration failed. Please try again.");
+            });
     };
 
     return (
