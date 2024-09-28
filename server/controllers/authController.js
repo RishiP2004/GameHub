@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import knex from '../db/db';
+import {db} from "../db/db.js";
 
 const secretKey = process.env.SECRET_KEY;
 
@@ -19,14 +19,14 @@ export const register = async (req, res) => {
     const { username, password } = req.body;
 
     try {
-        const existingUser = await knex('players').where({ username }).first();
+        const existingUser = await db('players').where({ username }).first();
 
         if (existingUser) {
             return res.status(401).json({ error: 'Username exists' });
         }
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        await knex('players').insert({
+        await db('players').insert({
             username,
             password: hashedPassword,
         });
@@ -36,7 +36,8 @@ export const register = async (req, res) => {
         res.json({ token });
     } catch (error) {
         console.error('Error during register:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        //res.status(500).json({ error: 'Internal Server Error' });
+        res.status(500).json({ error: 'Internal Server Error', details: error.message });
     }
 };
 
@@ -56,7 +57,7 @@ export const login = async (req, res) => {
     const { username, password } = req.body;
 
     try {
-        const user = await knex('players').where({ username }).first();
+        const user = await db('players').where({ username }).first();
 
         if (!user) {
             await new Promise(resolve => setTimeout(resolve, 500));

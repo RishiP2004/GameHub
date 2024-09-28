@@ -1,30 +1,33 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import Queue from '../queue/Queue';
+import { Ninja, TicTacToe } from "../GameIds";
+import Queue from "../queue/Queue";
 import './TypeSelection.css';
 
-const TypeSelection = ({ selectedGame }) => {
+const TypeSelection = ({ selectedGame, setSelectedGame }) => {
     const history = useHistory();
-    // AI Button selected
-    const handleAIButtonClick = () => {
-        history.push(`/game/${selectedGame}/ai`);
+
+    const handleGameButtonClick = () => {
+        const route = `/game/${selectedGame}/single`;
+        history.push(route);
     };
-    // Back Button Selected
+
     const handleBack = () => {
         history.push('/game-selection');
+        setSelectedGame(false);
     };
 
     return (
         <div className="type-selection-container">
             <Queue />
-            <button className="type-selection-button" onClick={handleAIButtonClick}>
-                VS AI
+            <button className="type-selection-button" onClick={handleGameButtonClick}>
+                {selectedGame === TicTacToe || selectedGame === Ninja ? 'VS AI' : 'Single Player'}
             </button>
             <button className="type-selection-button" onClick={handleBack}>
                 Back
             </button>
         </div>
     );
-}
+};
 
 export default TypeSelection;

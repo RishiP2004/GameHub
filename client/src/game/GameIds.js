@@ -1,6 +1,6 @@
 /**
  * Simple file to provide Ids for
- * all games (good for future addition)
+ * all sockets (good for future addition)
  */
 export const TicTacToe = "tictactoe"
-export const Connect4 = "connect4"
+export const Ninja = "ninja"

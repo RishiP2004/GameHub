@@ -1,14 +1,24 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
-import path from 'path';
 import { createServer } from 'http';
 import authRoutes from './routes/authRoutes.js';
 import statsRoutes from './routes/statsRoutes.js';
-import socketSetup from './socket.js';
-import {setupDatabase} from './db/db.js';
+import socketSetup from './sockets/socket.js';
+import { setupDatabase } from './db/db.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 const app = express();
 const server = createServer(app);
+import cors from 'cors';
+
+// Middleware setup
+app.use(cors({
+    origin: 'http://localhost:3000', // Adjust based on your client URL
+    credentials: true,
+}));
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Set up database
 setupDatabase()
@@ -24,15 +34,15 @@ app.use('/api', authRoutes);
 app.use('/api', statsRoutes);
 
 // Serve static files
-app.use(express.static(path.join(process.cwd(), 'client', 'build')));
+app.use(express.static(path.join(__dirname, 'client', 'build')));
 
 // Fallback to client-side routing
 app.get('*', (req, res) => {
-    res.sendFile(path.join(process.cwd(), 'client', 'public', 'index.html'));
+    res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
 });
 
 // Socket.io setup
 socketSetup(server);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => console.log(`Server is running on port ${PORT}`));

@@ -7,12 +7,11 @@ import UserRegister from './auth/UserRegister';
 import GameSelection from './game/selection/GameSelection';
 import TypeSelection from './game/selection/TypeSelection';
 import TicTacToePlayerGame from "./game/tictactoe/player/TicTacToePlayerGame";
-//import Connect4PlayerGame from './Connect4PlayerGame';
 import TicTacToeAIGame from "./game/tictactoe/ai/TicTacToeAIGame";
-//import Connect4AIGame from './Connect4AIGame';
 import TopPlayers from "./stats/TopPlayers";
-import {Connect4, TicTacToe} from "./game/GameIds";
+import {Ninja, TicTacToe} from "./game/GameIds";
 import PlayerStats from "./stats/PlayerStats";
+import SingleNinjaGame from "./game/ninja/single/SingleNinjaGame";
 
 function App() {
     const [loggedIn, setLoggedIn] = useState(false);
@@ -27,7 +26,7 @@ function App() {
         if (!authToken || guestMode) {
             setLoggedIn(guestMode);
         } else {
-            axios.get('http://localhost:3000/verify-token', {
+            axios.get('/verify-token', {
                 headers: { Authorization: `Bearer ${authToken}` },
             })
                 .then(() => setLoggedIn(true))
@@ -37,11 +36,6 @@ function App() {
                 });
         }
     }, [authToken, guestMode]);
-
-    // Helper to render protected routes based on authentication status
-    const renderProtectedRoute = (Component, props = {}) => {
-        return loggedIn || guestMode ? <Component {...props} /> : <Redirect to="/" />;
-    };
 
     return (
         <Router>
@@ -73,12 +67,12 @@ function App() {
                 {/* Type Selection Route */}
                 <Route path="/type-selection">
                     {loggedIn || guestMode ? (
-                        <TypeSelection selectedGame={selectedGame} />
+                        <TypeSelection selectedGame={selectedGame} setSelectedGame={setSelectedGame} />
                     ) : (
                         <Redirect to="/" />
                     )}
                 </Route>
-                {/* Game Routes with Player vs Player */}
+                {/* Game Routes with Multiplayer */}
                 <Route path="/game/:game/:player1/:player2" exact>
                     {({ match }) => {
                         const { game, player1, player2 } = match.params;
@@ -87,8 +81,6 @@ function App() {
                             switch (game) {
                                 case TicTacToe:
                                     return <TicTacToePlayerGame player1={player1} player2={player2} />;
-                                case Connect4:
-                                    return <TicTacToeAIGame player1={player1} player2={player2} />;
                                 default:
                                     return <TicTacToePlayerGame player1={player1} player2={player2} />;
                             }
@@ -97,8 +89,8 @@ function App() {
                         }
                     }}
                 </Route>
-                {/* Game Routes with AI */}
-                <Route path="/game/:game/ai" exact>
+                {/* Game Routes with Single Player */}
+                <Route path="/game/:game/single" exact>
                     {({ match }) => {
                         const { game } = match.params;
 
@@ -106,8 +98,8 @@ function App() {
                             switch (game) {
                                 case TicTacToe:
                                     return <TicTacToeAIGame />;
-                                case Connect4:
-                                    return <TicTacToeAIGame />;
+                                case Ninja:
+                                    return <SingleNinjaGame />;
                                 default:
                                     return <TicTacToeAIGame />;
                             }

@@ -1,4 +1,4 @@
-const knex = require('../db/db');
+import {db} from "../db/db.js";
 
 /**
  * Player wins API
@@ -14,13 +14,13 @@ export const getPlayerWins = async (req, res) => {
     try {
         const { username, game } = req.params;
 
-        const playerExists = await knex('players').where({ username }).first();
+        const playerExists = await db('players').where({ username }).first();
 
         if (!playerExists) {
             return res.status(404).json({ error: 'Player not found' });
         }
 
-        const playerWins = await knex('player_wins')
+        const playerWins = await db('player_wins')
             .select('gameName', 'wins')
             .where({ username, gameName: game });
 
@@ -48,7 +48,7 @@ export const getTopPlayers = async (req, res) => {
     const { game } = req.params;
 
     try {
-        const topPlayers = await knex('player_wins')
+        const topPlayers = await db('player_wins')
             .select('username', 'wins')
             .where({ gameName: game })
             .orderBy('wins', 'desc')
@@ -82,25 +82,25 @@ export const updatePlayerWins = async (req, res) => {
     const { username, game } = req.params;
 
     try {
-        const playerExists = await knex('players').where({ username }).first();
+        const playerExists = await db('players').where({ username }).first();
 
         if (!playerExists) {
             return res.status(404).json({ error: 'Player not found' });
         }
 
-        const existingRecord = await knex('player_wins')
+        const existingRecord = await db('player_wins')
             .where({ username, gameName: game })
             .first();
 
         if (existingRecord) {
-            await knex('player_wins')
+            await db('player_wins')
                 .where({ username, gameName: game })
                 .increment('wins', 1);
         } else {
-            await knex('player_wins').insert({ username, gameName: game, wins: 1 });
+            await db('player_wins').insert({ username, gameName: game, wins: 1 });
         }
 
-        const updatedWins = await knex('player_wins')
+        const updatedWins = await db('player_wins')
             .select('gameName', 'wins')
             .where({ username });
 

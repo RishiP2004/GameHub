@@ -5,8 +5,8 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server",
-    "dev": "nodemon server"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
   "keywords": [],
   "author": "",
@@ -19,5 +19,6 @@
     "knex": "^3.1.0",
     "socket.io": "^4.8.0",
     "sqlite3": "^5.1.7"
-  }
+  },
+  "type": "module"
 }

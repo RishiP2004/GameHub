@@ -9,22 +9,35 @@ const UserLogin = ({ setLoggedIn }) => {
     const [error, setError] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const history = useHistory();
-    // Successful login
+
     const successMessage = () => (
         <div className="success" style={{ display: submitted ? 'block' : 'none' }}>
             <h1>Successfully logged in</h1>
         </div>
     );
-    // Non successful login
+
     const errorMessage = () => (
         <div className="error" style={{ display: error ? 'block' : 'none' }}>
             <h1>Please enter all the fields</h1>
         </div>
     );
-    // Handle submitting form
+
+    const handleUsernameChange = (e) => {
+        setUsernameInput(e.target.value);
+        if (error) setError(false);
+    };
+
+    const handlePasswordChange = (e) => {
+        setPassword(e.target.value);
+        if (error) setError(false);
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (usernameInput === '' || password === '') {
+        console.log('Username:', usernameInput);
+        console.log('Password:', password);
+
+        if (usernameInput.trim() === '' || password.trim() === '') {
             setError(true);
             return;
         }
@@ -45,7 +58,6 @@ const UserLogin = ({ setLoggedIn }) => {
                 setError(true);
             });
     };
-
     const handleBack = () => {
         history.push('/game-selection');
     };
@@ -63,7 +75,7 @@ const UserLogin = ({ setLoggedIn }) => {
                     <input
                         type="text"
                         value={usernameInput}
-                        onChange={(e) => setUsernameInput(e.target.value)}
+                        onChange={handleUsernameChange}
                         className="input"
                     />
                 </label>
@@ -72,7 +84,7 @@ const UserLogin = ({ setLoggedIn }) => {
                     <input
                         type="password"
                         value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        onChange={handlePasswordChange}
                         className="input"
                     />
                 </label>
@@ -85,6 +97,6 @@ const UserLogin = ({ setLoggedIn }) => {
             </div>
         </div>
     );
-}
+};
 
-export default UserLogin
+export default UserLogin;

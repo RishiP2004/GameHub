@@ -1,6 +1,6 @@
 import express from 'express';
 import { getPlayerWins, updatePlayerWins, getTopPlayers } from '../controllers/statsController.js';
-import checkApiKey from '../middlewares/checkApiKey.js';
+import {checkApiKey} from '../middlewares/checkApiKey.js';
 
 const router = express.Router();
 

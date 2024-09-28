@@ -1,7 +1,7 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import './GameSelection.css';
-import {Connect4, TicTacToe} from "../GameIds";
+import {Ninja, TicTacToe} from "../GameIds";
 
 const GameSelection = ({ setSelectedGame }) => {
     const history = useHistory();
@@ -14,6 +14,7 @@ const GameSelection = ({ setSelectedGame }) => {
     const handleLogout = () => {
         localStorage.removeItem('user');
         document.cookie = 'authToken=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+        setSelectedGame(false);
         history.push('/');
     };
     //TODO add check for guest mode log out thing
@@ -22,8 +23,8 @@ const GameSelection = ({ setSelectedGame }) => {
             <button className="game-selection-button" onClick={() => handleGameButtonClick(TicTacToe)}>
                 Tic Tac Toe
             </button>
-            <button className="game-selection-button" onClick={() => handleGameButtonClick(Connect4)}>
-                Connect Four
+            <button className="game-selection-button" onClick={() => handleGameButtonClick(Ninja)}>
+                Ninja
             </button>
             <button className="game-selection-button" onClick={handleLogout}>
                 Log Out

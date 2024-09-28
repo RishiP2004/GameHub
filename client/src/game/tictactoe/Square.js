@@ -1,9 +1,8 @@
 import React from 'react';
 import './Square.css';
-
 /**
  * Square instance of the board used
- * for TicTacToePlayerBoard and TicTacToeAIBoard
+ * for TicTacToe Boards
  *
  * @param value
  * @param onSquareClick

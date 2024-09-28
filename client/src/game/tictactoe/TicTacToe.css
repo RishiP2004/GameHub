@@ -1,21 +1,22 @@
 .game-container {
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
+    justify-content: space-between; /* Space out sections */
     align-items: center;
-    height: 50vh;
-    padding-top: 30px;
+    min-height: 60vh; /* Full viewport height */
+    padding: 30px;
+    box-sizing: border-box;
 }
 
 .game-board {
-    margin-bottom: 20px;
+    margin: 20px 0; /* Add some margin around the board */
     display: flex;
     justify-content: center;
 }
 
 .pointer-select {
     text-align: center;
-    margin-top: 20px;
+    margin-bottom: 15px; /* Adds space below pointer select */
 }
 
 .pointer-options {
@@ -59,6 +60,37 @@
 
 .status {
     margin-bottom: 10px;
-    font-size: 1.5rem;
+    font-size: 3rem;
     text-align: center;
+    color: #007bff;
+}
+
+.buttons-container {
+    display: flex;
+    justify-content: space-between;
+    width: 80%; /* Make sure buttons are aligned with full width */
+    max-width: 200px; /* Limit max width to center buttons */
+    margin-top: 20px;
+}
+
+.button-selection {
+    font-size: 1.2rem;
+    color: white;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    padding: 12px 24px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin: 10px;
+}
+
+.button-selection:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+.button-selection:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5);
 }

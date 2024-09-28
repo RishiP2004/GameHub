@@ -91,7 +91,7 @@ const UserRegister = ({ setLoggedIn }) => {
             return;
         }
 
-        axios.post('/api/register', { username: usernameInput, password })
+        axios.post('http://localhost:4000/api/register', { username: usernameInput, password })
             .then((response) => {
                 const token = response.data.token;
                 document.cookie = `authToken=${token}; path=/`;
@@ -105,7 +105,12 @@ const UserRegister = ({ setLoggedIn }) => {
                 console.error('Registration error:', error.response ? error.response.data : error.message);
                 setSubmitted(false);
                 setError(true);
-                setErrorMsg("Registration failed. Please try again.");
+
+                if (error.response && error.response.status === 401) {
+                    setErrorMsg('Username exists');
+                } else {
+                    setErrorMsg('Registration error, please try again: ' + error.message);
+                }
             });
     };
 

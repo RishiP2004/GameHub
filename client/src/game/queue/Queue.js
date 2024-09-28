@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import './Queue.css';
 import { useHistory } from "react-router-dom";
-import { Connect4, TicTacToe } from "../GameIds";
+import { Ninja, TicTacToe } from "../GameIds";
 
 /**
  * Queue component for handling player vs player selection.
@@ -12,7 +12,7 @@ import { Connect4, TicTacToe } from "../GameIds";
  */
 const Queue = ({ selectedGame }) => {
     const [ticTacToeQueue, setTicTacToeQueue] = useState([]);
-    const [connect4Queue, setConnect4Queue] = useState([]);
+    const [ninjaQueue, setNinjaQueue] = useState([]);
     const [isQueueActive, setIsQueueActive] = useState(false);
     const history = useHistory();
 
@@ -42,8 +42,8 @@ const Queue = ({ selectedGame }) => {
 
                     return newQueue;
                 });
-            } else if (selectedGame === Connect4) {
-                setConnect4Queue(prevQueue => {
+            } else if (selectedGame === Ninja) {
+                setNinjaQueue(prevQueue => {
                     const newQueue = [...prevQueue, storedUsername];
 
                     if (newQueue.length >= 2) {
@@ -67,8 +67,8 @@ const Queue = ({ selectedGame }) => {
     const handleCancelQueue = () => {
         if (selectedGame === TicTacToe) {
             setTicTacToeQueue([]);
-        } else if (selectedGame === Connect4) {
-            setConnect4Queue([]);
+        } else if (selectedGame === Ninja) {
+            setNinjaQueue([]);
         }
         setIsQueueActive(false);
     };
@@ -83,7 +83,7 @@ const Queue = ({ selectedGame }) => {
                     Cancel Queue
                 </button>
             )}
-            <p>Players in Queue: {selectedGame === TicTacToe ? (ticTacToeQueue.length > 0 ? ticTacToeQueue.join(', ') : 'None') : (connect4Queue.length > 0 ? connect4Queue.join(', ') : 'None')}</p>
+            <p>Players in Queue: {selectedGame === TicTacToe ? (ticTacToeQueue.length > 0 ? ticTacToeQueue.join(', ') : 'None') : (ninjaQueue.length > 0 ? ninjaQueue.join(', ') : 'None')}</p>
         </div>
     );
 };

@@ -1,26 +1,23 @@
-import React, { useState } from "react";
-import { calculateWinner } from "../GameUtils";
-import { useHistory } from "react-router-dom";
-import '../Board.css';
-import Square from "../Square";
-import {TicTacToe} from "../../GameIds";
+import React, { useState } from 'react';
+import { calculateWinner } from '../GameUtils';
+import { useHistory } from 'react-router-dom';
+import { TicTacToe } from '../../GameIds';
+import TicTacToeBoard from "../TicTacToeBoard";
 
 /**
- * Handles the Player Board element where the game is
- * being played. Handles clicking the board squares
- * as well as checking if a winner has been found
- * between two players.
+ * Board component for Player TicTacToe Game
  *
  * @param player1
  * @param player2
  * @param squares
  * @param onPlay
- * @returns {JSX.Element}
+ * @param onGameEnd
+ * @returns {Element}
  * @constructor
  */
-const TicTacToePlayerBoard = ({ player1, player2, squares, onPlay }) => {
-    const history = useHistory();
+const TicTacToePlayerBoard = ({ player1, player2, squares, onPlay, onGameEnd }) => {
     const [playerTurn, setPlayerTurn] = useState(0);
+    const history = useHistory();
 
     const handleClick = (i) => {
         const nextSquares = squares.slice();
@@ -42,9 +39,9 @@ const TicTacToePlayerBoard = ({ player1, player2, squares, onPlay }) => {
         if (newWinner) {
             const winnerPlayer = newWinner === (player1.getPointer() === 'X' ? 0 : 1) ? player1 : player2;
             winnerPlayer.updateWins(history, TicTacToe);
-            history.push('/');
+            onGameEnd();
         } else if (nextSquares.every((square) => square !== null)) {
-            history.push('/');
+            onGameEnd();
         }
     };
 
@@ -60,24 +57,7 @@ const TicTacToePlayerBoard = ({ player1, player2, squares, onPlay }) => {
         }
     };
 
-    return (
-        <div className="game-container">
-            <div className="status">{getStatusMessage()}</div>
-            <div className="board">
-                {[0, 1, 2].map((row) => (
-                    <div key={row} className="board-row">
-                        {[0, 1, 2].map((col) => (
-                            <Square
-                                key={col}
-                                value={squares[row * 3 + col]}
-                                onSquareClick={() => handleClick(row * 3 + col)}
-                            />
-                        ))}
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
+    return <TicTacToeBoard squares={squares} status={getStatusMessage()} onSquareClick={handleClick} />;
 };
 
 export default TicTacToePlayerBoard;
