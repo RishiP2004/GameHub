@@ -4,6 +4,7 @@ export const FruitLogic = ({
                                canvasRef,
                                setScore,
                                isGameOver,
+                               isGameStarted,
                                setGameOver,
                                swipeDetected,
                                swipeMidpoint,
@@ -19,9 +20,8 @@ export const FruitLogic = ({
             x: Math.random() * canvasRef.current.width,
             y: 0,
             isSliced: false,
-            // Adjust the radius to make the fruit smaller and more dynamic
-            radius: Math.random() * (7) + 3, // Fruits will now be between 3 and 10 in radius
-            speed: Math.random() * 2 + 1.5 // Adjust speed, making the fruit fall faster
+            radius: Math.random() * (3) + 3,
+            speed: Math.random() * 2 + 1.5
         };
         fruits.current.push(fruit);
     };
@@ -32,8 +32,8 @@ export const FruitLogic = ({
             x: Math.random() * canvasRef.current.width,
             y: 0,
             isExploding: false,
-            explosionRadius: 10, // Make bombs slightly smaller
-            speed: Math.random() * 2 + 2 // Make bombs fall faster than fruits
+            explosionRadius: 7,
+            speed: Math.random() * 2 + 2
         };
         bombs.current.push(bomb);
     };
@@ -70,7 +70,7 @@ export const FruitLogic = ({
 
     // Game loop for drawing and updating
     const gameLoop = () => {
-        if (isGameOver) return;
+        if (isGameOver || !isGameStarted) return; // Only run the game if it has started and not over
 
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
@@ -80,7 +80,7 @@ export const FruitLogic = ({
         canvas.width = canvas.parentElement.clientWidth;
         canvas.height = canvas.parentElement.clientHeight;
 
-        // Enable anti-aliasing (smoothing) for better visuals
+        // Enable antialiasing (smoothing) for better visuals
         ctx.imageSmoothingEnabled = true;
 
         // Clear the canvas
@@ -126,17 +126,17 @@ export const FruitLogic = ({
         });
     };
 
-    // Draw a fruit with smooth anti-aliasing
+    // Draw a fruit
     const drawFruit = (ctx, fruit) => {
         if (fruit.isSliced) return;
         ctx.beginPath();
         ctx.arc(fruit.x, fruit.y, fruit.radius, 0, Math.PI * 2);
-        ctx.fillStyle = 'green'; // You can also randomize fruit colors if needed
+        ctx.fillStyle = 'green';
         ctx.fill();
         ctx.closePath();
     };
 
-    // Draw a bomb with smooth anti-aliasing
+    // Draw a bomb
     const drawBomb = (ctx, bomb) => {
         if (bomb.isExploding) return;
         ctx.beginPath();
@@ -148,7 +148,8 @@ export const FruitLogic = ({
 
     // Main game setup and intervals
     useEffect(() => {
-        if (isGameOver) return;
+        // Only start the game loop if the game has started and is not over
+        if (!isGameStarted || isGameOver) return;
 
         // Use 60 frames per second (1000 ms / 60)
         const intervalId = setInterval(gameLoop, 1000 / 60);
@@ -160,7 +161,7 @@ export const FruitLogic = ({
             clearInterval(intervalFruit);
             clearInterval(intervalBomb);
         };
-    }, [canvasRef, isGameOver]);
+    }, [canvasRef, isGameStarted, isGameOver]); // Add isGameStarted and isGameOver to dependencies
 
-    return null; // No canvas here, as it’s handled in the parent component
+    return null;
 };

@@ -1,129 +1,106 @@
-import React, { useRef, useEffect, useState } from 'react';
-import Webcam from 'react-webcam';
-import { PointerDetection } from './PointerDetection';
+import React, { useEffect, useRef, useState } from 'react';
 import { FruitLogic } from './FruitLogic';
+import { PointerDetection } from './PointerDetection';
+import Webcam from "react-webcam";
+import './NinjaGame.css'; // Adjust the path as necessary
 
-const NinjaGame = ({ onBack, onRestart, handleFruitSliced, handleBombTriggered }) => {
+const NinjaGame = () => {
     const webcamRef = useRef(null);
-    const canvasRef = useRef(null);
-    const [score, setScore] = useState(0);
-    const [gameOver, setGameOver] = useState(false);
+    const canvasRef = useRef(null); // Game canvas
+    const overlayCanvasRef = useRef(null); // Pointer canvas
     const [swipeDetected, setSwipeDetected] = useState(false);
     const [swipeMidpoint, setSwipeMidpoint] = useState(null);
-    const [startCountdown, setStartCountdown] = useState(3); // Countdown starts from 3 seconds
-    const [gameStarted, setGameStarted] = useState(false); // Track whether the game has started
+    const [startCountdown, setStartCountdown] = useState(3);
+    const [gameStarted, setGameStarted] = useState(false);
+    const [isGameOver, setGameOver] = useState(false);
+    const [score, setScore] = useState(0);
 
+    // Handle countdown timer to start the game
     useEffect(() => {
-        let countdownTimer;
         if (startCountdown > 0) {
-            countdownTimer = setInterval(() => {
+            const countdownTimer = setInterval(() => {
                 setStartCountdown(prev => prev - 1);
-            }, 1000); // Decrease countdown every second
-        } else if (startCountdown === 0) {
-            setGameStarted(true); // Start the game when countdown reaches zero
-            clearInterval(countdownTimer);
+            }, 1000);
+
+            // Clear the interval when countdown ends or component unmounts
+            return () => clearInterval(countdownTimer);
+        } else if (startCountdown === 0 && !gameStarted) {
+            // Start the game when countdown reaches zero
+            setGameStarted(true);
         }
+    }, [startCountdown, gameStarted]);
 
-        return () => clearInterval(countdownTimer); // Cleanup on unmount
-    }, [startCountdown]);
-
+    // Handle pointer detection using webcam and hand detection
     useEffect(() => {
-        if (!gameOver) {
-            const cleanupHandDetection = PointerDetection(webcamRef, canvasRef, (midpoint) => {
-                setSwipeDetected(true); // Set swipe detected
-                setSwipeMidpoint(midpoint); // Update swipe midpoint
+        if (!isGameOver) {
+            const cleanupHandDetection = PointerDetection(webcamRef, overlayCanvasRef, (midpoint) => {
+                setSwipeDetected(true);
+                setSwipeMidpoint(midpoint);
             });
 
             return () => {
                 if (cleanupHandDetection) {
                     cleanupHandDetection();  // Clean up hand detection when component unmounts or game ends
                 }
-            }
+            };
         }
-    }, [setSwipeDetected, setSwipeMidpoint, gameOver]); // Removed setSwipeDetected and setSwipeMidpoint from the dependencies
+    }, [isGameOver]);
 
+    // Reset swipe detection after it’s processed
     useEffect(() => {
         if (swipeDetected) {
             setSwipeDetected(false); // Reset swipe detected
         }
     }, [swipeDetected]);
 
+    // Handle fruit slicing
+    const handleFruitSliced = () => {
+        setScore(prevScore => prevScore + 1);  // Increment score
+    };
+
+    // Handle game over when a bomb is triggered
+    const handleBombTriggered = () => {
+        setGameOver(true);
+    };
+
     return (
         <>
-            {gameOver ? (
-                <div
-                    style={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        fontSize: '3rem',
-                        color: 'red',
-                        textAlign: 'center',
-                    }}
-                >
-                    Game Over
-                    <button
-                        onClick={onBack}
-                        style={{
-                            display: 'block',
-                            marginTop: '20px',
-                            padding: '10px 20px',
-                            fontSize: '1rem',
-                            backgroundColor: '#007bff',
-                            color: '#fff',
-                            border: 'none',
-                            borderRadius: '5px',
-                            cursor: 'pointer',
-                        }}
-                    >
-                        Back
-                    </button>
-                    <button
-                        onClick={onRestart}
-                        style={{
-                            display: 'block',
-                            marginTop: '20px',
-                            padding: '10px 20px',
-                            fontSize: '1rem',
-                            backgroundColor: '#28a745',
-                            color: '#fff',
-                            border: 'none',
-                            borderRadius: '5px',
-                            cursor: 'pointer',
-                        }}
-                    >
-                        Restart
-                    </button>
-                </div>
-            ) : (
-                <>
-                    <Webcam ref={webcamRef} />
-                    <canvas
-                        ref={canvasRef}
-                        style={{
-                            position: 'absolute',
-                            marginLeft: 'auto',
-                            marginRight: 'auto',
-                            left: 0,
-                            right: 0,
-                            textAlign: 'center',
-                            zIndex: 8,
-                            width: 640,
-                            height: 480,
-                        }}
-                    />
-                    <FruitLogic
-                        canvasRef={canvasRef}
-                        setScore={setScore}
-                        isGameOver={gameOver}
-                        setGameOver={setGameOver}
-                        handleFruitSliced={handleFruitSliced}
-                        handleBombTriggered={handleBombTriggered}
-                        swipeDetected={swipeDetected}
-                        swipeMidpoint={swipeMidpoint} // Pass the midpoint to FruitLogic
-                    />
-                </>
+            <Webcam
+                ref={webcamRef}
+                style={{
+                    position: 'absolute',
+                    width: "640px",
+                    height: "480px",
+                    opacity: 0, // Make it invisible but still functional
+                }}
+                videoConstraints={{
+                    width: 640,
+                    height: 480,
+                    facingMode: "user",
+                }}
+            />
+            <canvas ref={canvasRef} className="game-canvas" />
+            <canvas ref={overlayCanvasRef} className="pointer-canvas" />
+            {isGameOver && (
+                <div className="game-over-message">Game Over!</div>
+            )}
+            <FruitLogic
+                canvasRef={canvasRef}
+                setScore={setScore}
+                isGameOver={isGameOver}
+                setGameOver={setGameOver}
+                isGameStarted={gameStarted}  // Pass gameStarted to FruitLogic
+                swipeDetected={swipeDetected}
+                swipeMidpoint={swipeMidpoint}
+                handleFruitSliced={handleFruitSliced}
+                handleBombTriggered={handleBombTriggered}
+            />
+
+            <div className="score">Score: {score}</div>
+
+            {/* Countdown before the game starts */}
+            {!gameStarted && startCountdown > 0 && (
+                <div className="countdown">Game starts in: {startCountdown}</div>
             )}
         </>
     );

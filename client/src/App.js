@@ -11,8 +11,6 @@ import TicTacToeAIGame from "./game/tictactoe/ai/TicTacToeAIGame";
 import TopPlayers from "./stats/TopPlayers";
 import {Ninja, TicTacToe} from "./game/GameIds";
 import PlayerStats from "./stats/PlayerStats";
-import SingleNinjaGame from "./game/ninja/single/SingleNinjaGame";
-import NinjaTest from "./game/ninja/NinjaTest";
 import NinjaGame from "./game/ninja/NinjaGame";
 
 function App() {
@@ -101,7 +99,7 @@ function App() {
                                 case TicTacToe:
                                     return <TicTacToeAIGame />;
                                 case Ninja:
-                                    return <NinjaTest />;
+                                    return <NinjaGame />;
                                 default:
                                     return <TicTacToeAIGame />;
                             }

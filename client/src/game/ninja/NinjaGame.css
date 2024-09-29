@@ -16,6 +16,16 @@ body {
     z-index: 20; /* Make sure it's above the canvas */
 }
 
+.countdown {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white; /* Change text color to white */
+    font-size: 24px; /* Adjust font size as needed */
+    z-index: 20; /* Make sure it's above the canvas */
+}
+
 .game-canvas {
     position: absolute;
     top: 50%;

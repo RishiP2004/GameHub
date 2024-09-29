@@ -5,13 +5,13 @@ export const PointerDetection = (webcamRef, overlayCanvasRef, onSwipe) => {
     let animationFrameId;
     let swipeThreshold = 20;
     let swipeStartPoint = null;
+    let swipeDetected = false; // Track whether a swipe is detected
 
     const detectHand = async (net) => {
         if (webcamRef.current && webcamRef.current.video.readyState === 4) {
             const video = webcamRef.current.video;
             const videoWidth = video.videoWidth;
             const videoHeight = video.videoHeight;
-
             // Set pointer canvas size
             overlayCanvasRef.current.width = videoWidth;
             overlayCanvasRef.current.height = videoHeight;
@@ -25,23 +25,21 @@ export const PointerDetection = (webcamRef, overlayCanvasRef, onSwipe) => {
                 if (!swipeStartPoint) {
                     swipeStartPoint = currentFingerTip;
                 }
-
                 // Detect swipe
-                const swipeDetected = detectSwipe(swipeStartPoint, currentFingerTip);
+                swipeDetected = detectSwipe(swipeStartPoint, currentFingerTip);
+
                 if (swipeDetected) {
                     const midpoint = calculateMidpoint(swipeStartPoint, currentFingerTip);
-                    onSwipe(midpoint);
-                    swipeStartPoint = currentFingerTip; // Reset for next swipe
+                    onSwipe(midpoint); // Notify parent component
+                    drawFingerTip(overlayCanvasRef.current, currentFingerTip, swipeStartPoint, true); // Draw swipe line
                 } else {
-                    swipeStartPoint = currentFingerTip; // Update start point
+                    drawFingerTip(overlayCanvasRef.current, currentFingerTip, swipeStartPoint, false); // No swipe line
                 }
-
-                drawFingerTip(overlayCanvasRef.current, currentFingerTip); // Draw fingertip
+                swipeStartPoint = currentFingerTip; // Update start point
             } else {
                 swipeStartPoint = null; // Reset if no hand detected
             }
         }
-
         animationFrameId = requestAnimationFrame(() => detectHand(net));
     };
 
@@ -61,17 +59,28 @@ export const PointerDetection = (webcamRef, overlayCanvasRef, onSwipe) => {
         return distanceMoved > swipeThreshold;
     };
 
-    // Draw fingertip
-    const drawFingerTip = (canvas, currentFingerTip) => {
+    // Draw fingertip and swipe line
+    const drawFingerTip = (canvas, currentFingerTip, swipeStartPoint, drawLine) => {
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear previous drawings
 
         if (currentFingerTip) {
             const [x, y] = currentFingerTip;
-            ctx.fillStyle = 'red';
+            ctx.fillStyle = 'blue';
             ctx.beginPath();
             ctx.arc(x, y, 8, 0, 2 * Math.PI);
             ctx.fill();
+
+            // If swipe is detected, draw the line
+            if (drawLine && swipeStartPoint) {
+                const [startX, startY] = swipeStartPoint;
+                ctx.strokeStyle = 'red';
+                ctx.lineWidth = 5;
+                ctx.beginPath();
+                ctx.moveTo(startX, startY);
+                ctx.lineTo(x, y);
+                ctx.stroke();
+            }
         }
     };
 
