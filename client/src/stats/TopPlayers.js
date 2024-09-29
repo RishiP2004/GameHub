@@ -14,7 +14,7 @@ const TopPlayers = (selectedGame) => {
 
     useEffect(() => {
         if (selectedGame) {
-            axios.get(`/top-players/${selectedGame}`)
+            axios.get(`http://localhost:4000/api/top-players/${selectedGame}`)
                 .then(response => setTopPlayers(response.data))
                 .catch(error => console.error('Error fetching top players:', error));
         }

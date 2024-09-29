@@ -6,12 +6,10 @@ import './TypeSelection.css';
 
 const TypeSelection = ({ selectedGame, setSelectedGame }) => {
     const history = useHistory();
-
     const handleGameButtonClick = () => {
         const route = `/game/${selectedGame}/single`;
         history.push(route);
     };
-
     const handleBack = () => {
         history.push('/game-selection');
         setSelectedGame(false);

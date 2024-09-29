@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import Webcam from 'react-webcam';
-import { HandDetection } from './HandDetection';
+import { PointerDetection } from './PointerDetection';
 import { FruitLogic } from './FruitLogic';
 
 const NinjaGame = ({ onBack, onRestart, handleFruitSliced, handleBombTriggered }) => {
@@ -10,19 +10,37 @@ const NinjaGame = ({ onBack, onRestart, handleFruitSliced, handleBombTriggered }
     const [gameOver, setGameOver] = useState(false);
     const [swipeDetected, setSwipeDetected] = useState(false);
     const [swipeMidpoint, setSwipeMidpoint] = useState(null);
+    const [startCountdown, setStartCountdown] = useState(3); // Countdown starts from 3 seconds
+    const [gameStarted, setGameStarted] = useState(false); // Track whether the game has started
+
+    useEffect(() => {
+        let countdownTimer;
+        if (startCountdown > 0) {
+            countdownTimer = setInterval(() => {
+                setStartCountdown(prev => prev - 1);
+            }, 1000); // Decrease countdown every second
+        } else if (startCountdown === 0) {
+            setGameStarted(true); // Start the game when countdown reaches zero
+            clearInterval(countdownTimer);
+        }
+
+        return () => clearInterval(countdownTimer); // Cleanup on unmount
+    }, [startCountdown]);
 
     useEffect(() => {
         if (!gameOver) {
-            const cleanupHandDetection = HandDetection(webcamRef, canvasRef,(midpoint) => {
+            const cleanupHandDetection = PointerDetection(webcamRef, canvasRef, (midpoint) => {
                 setSwipeDetected(true); // Set swipe detected
                 setSwipeMidpoint(midpoint); // Update swipe midpoint
             });
 
             return () => {
-                cleanupHandDetection(); // Clean up hand detection when component unmounts or game ends
-            };
+                if (cleanupHandDetection) {
+                    cleanupHandDetection();  // Clean up hand detection when component unmounts or game ends
+                }
+            }
         }
-    }, [gameOver]);
+    }, [setSwipeDetected, setSwipeMidpoint, gameOver]); // Removed setSwipeDetected and setSwipeMidpoint from the dependencies
 
     useEffect(() => {
         if (swipeDetected) {

@@ -12,6 +12,8 @@ import TopPlayers from "./stats/TopPlayers";
 import {Ninja, TicTacToe} from "./game/GameIds";
 import PlayerStats from "./stats/PlayerStats";
 import SingleNinjaGame from "./game/ninja/single/SingleNinjaGame";
+import NinjaTest from "./game/ninja/NinjaTest";
+import NinjaGame from "./game/ninja/NinjaGame";
 
 function App() {
     const [loggedIn, setLoggedIn] = useState(false);
@@ -99,7 +101,7 @@ function App() {
                                 case TicTacToe:
                                     return <TicTacToeAIGame />;
                                 case Ninja:
-                                    return <SingleNinjaGame />;
+                                    return <NinjaTest />;
                                 default:
                                     return <TicTacToeAIGame />;
                             }

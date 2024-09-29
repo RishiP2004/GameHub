@@ -42,7 +42,7 @@ const UserLogin = ({ setLoggedIn }) => {
             return;
         }
 
-        axios.post('/api/login', { username: usernameInput, password })
+        axios.post('http://localhost:4000/api/login', { username: usernameInput, password })
             .then((response) => {
                 const token = response.data.token;
                 document.cookie = `authToken=${token}; path=/`;

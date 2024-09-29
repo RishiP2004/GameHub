@@ -10,7 +10,7 @@ import './PlayerStats.css';
  */
 export const updateWins = async (username, game) => {
     try {
-        await axios.put(`/api/player/${username}/updateWins`, { gameName: game });
+        await axios.put(`http://localhost:4000/api/player/${username}/updateWins`, { gameName: game });
         console.log(`Updated wins for ${game}`);
     } catch (error) {
         console.error('Error updating win count:', error);
@@ -33,7 +33,7 @@ const PlayerStats = (gameName) => {
 
     useEffect(() => {
         if (!guestMode && username && gameName) {
-            axios.get(`/player-wins/${username}?gameName=${gameName}`)
+            axios.get(`http://localhost:4000/api/player-wins/${username}?gameName=${gameName}`)
                 .then(response => {
                     setMyWins(response.data.wins || 0);
                     setLoading(false);

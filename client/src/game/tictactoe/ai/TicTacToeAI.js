@@ -1,7 +1,7 @@
 import OpenAI from 'openai';
 import {calculateWinner} from "../GameUtils";
 
-const API_KEY = "API_KEY";
+const API_KEY = process.env.GPT_API_KET;
 
 /**
  * Calculates the best AI move based on
