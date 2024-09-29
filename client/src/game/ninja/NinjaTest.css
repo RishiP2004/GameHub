@@ -1,0 +1,41 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.game-over-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white; /* Change text color to white */
+    font-size: 24px; /* Adjust font size as needed */
+    z-index: 20; /* Make sure it's above the canvas */
+}
+
+.game-canvas {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    height: 80%;
+    background-color: lightgray; /* Add this for debugging */
+    z-index: 10;
+    border: 5px solid gray;
+    box-sizing: border-box;
+}
+
+.pointer-canvas {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    height: 80%;
+    pointer-events: none; /* This makes sure the pointer canvas doesn't block interactions */
+    z-index: 15; /* This is above the game canvas but below the game-over message */
+}

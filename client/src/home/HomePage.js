@@ -13,7 +13,7 @@ const HomePage = () => {
 
     return (
         <div className="home-container">
-            <h1>Welcome to Simplistic Games</h1>
+            <h1>Welcome to R-Game Hub</h1>
             <p>Choose an option below to start playing!</p>
             <div className="home-buttons">
                 <Link to="/login">

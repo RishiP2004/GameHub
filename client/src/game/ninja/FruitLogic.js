@@ -13,68 +13,41 @@ export const FruitLogic = ({
     const fruits = useRef([]);
     const bombs = useRef([]);
 
-    // Function to add a new fruit
+    // Add new fruit with adjusted size and speed
     const addFruit = () => {
         const fruit = {
             x: Math.random() * canvasRef.current.width,
-            y: 0, // Start from top
+            y: 0,
             isSliced: false,
-            radius: 30, // Set fruit radius
-            speed: Math.random() * 2 + 1 // Random speed for falling
+            // Adjust the radius to make the fruit smaller and more dynamic
+            radius: Math.random() * (7) + 3, // Fruits will now be between 3 and 10 in radius
+            speed: Math.random() * 2 + 1.5 // Adjust speed, making the fruit fall faster
         };
         fruits.current.push(fruit);
     };
 
-    // Function to add a new bomb
+    // Add new bomb with adjusted size and speed
     const addBomb = () => {
         const bomb = {
             x: Math.random() * canvasRef.current.width,
-            y: 0, // Start from top
+            y: 0,
             isExploding: false,
-            explosionRadius: 5,
-            speed: Math.random() * 2 + 1 // Random speed for falling
+            explosionRadius: 10, // Make bombs slightly smaller
+            speed: Math.random() * 2 + 2 // Make bombs fall faster than fruits
         };
         bombs.current.push(bomb);
     };
 
-    const handleOutOfBounds = () => {
-        const canvasHeight = canvasRef.current.height;
-
-        // Remove out-of-bound fruits and bombs
-        fruits.current = fruits.current.filter(fruit => {
-            if (fruit.y > canvasHeight) {
-                setGameOver(true);
-                return false;
-            }
-            return true;
-        });
-
-        bombs.current = bombs.current.filter(bomb => {
-            if (bomb.y > canvasHeight) {
-                setGameOver(true);
-                return false;
-            }
-            return true;
-        });
-
-        if (fruits.current.length === 0 && bombs.current.length === 0) {
-            setGameOver(true);
-        }
-    };
-
-    // Function to detect if a fruit is sliced
+    // Check if fruit or bomb is sliced
     const isSliced = (obj) => {
         if (!swipeMidpoint) return false;
-
-        // Check if the fruit is sliced by the swipe midpoint
         const { x, y, radius } = obj;
         const [midX, midY] = swipeMidpoint;
-
-        // Use a simple distance check to see if the swipe midpoint is within the fruit's area
         const distance = Math.hypot(midX - x, midY - y);
         return distance < radius;
     };
 
+    // Detect swipes
     const checkDetection = () => {
         if (!swipeDetected || !swipeMidpoint) return;
 
@@ -95,25 +68,92 @@ export const FruitLogic = ({
         });
     };
 
+    // Game loop for drawing and updating
     const gameLoop = () => {
         if (isGameOver) return;
 
-        const ctx = canvasRef.current.getContext('2d');
-        ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
 
-        fruits.current.forEach(fruit => fruit.y += fruit.speed);
-        bombs.current.forEach(bomb => bomb.y += bomb.speed);
+        // Set canvas dimensions based on the parent container
+        canvas.width = canvas.parentElement.clientWidth;
+        canvas.height = canvas.parentElement.clientHeight;
 
-        handleOutOfBounds();
+        // Enable anti-aliasing (smoothing) for better visuals
+        ctx.imageSmoothingEnabled = true;
+
+        // Clear the canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Draw fruits
+        fruits.current.forEach(fruit => {
+            fruit.y += fruit.speed; // Update position
+            drawFruit(ctx, fruit);  // Draw fruit
+        });
+
+        // Draw bombs
+        bombs.current.forEach(bomb => {
+            bomb.y += bomb.speed; // Update position
+            drawBomb(ctx, bomb);  // Draw bomb
+        });
+
+        // Check for slicing
         checkDetection();
+
+        // Remove out-of-bounds objects
+        handleOutOfBounds();
     };
 
+    // Handle out-of-bounds fruits/bombs
+    const handleOutOfBounds = () => {
+        const canvasHeight = canvasRef.current.height;
+
+        fruits.current = fruits.current.filter(fruit => {
+            if (fruit.y > canvasHeight) {
+                setGameOver(true);
+                return false;
+            }
+            return true;
+        });
+
+        bombs.current = bombs.current.filter(bomb => {
+            if (bomb.y > canvasHeight) {
+                setGameOver(true);
+                return false;
+            }
+            return true;
+        });
+    };
+
+    // Draw a fruit with smooth anti-aliasing
+    const drawFruit = (ctx, fruit) => {
+        if (fruit.isSliced) return;
+        ctx.beginPath();
+        ctx.arc(fruit.x, fruit.y, fruit.radius, 0, Math.PI * 2);
+        ctx.fillStyle = 'green'; // You can also randomize fruit colors if needed
+        ctx.fill();
+        ctx.closePath();
+    };
+
+    // Draw a bomb with smooth anti-aliasing
+    const drawBomb = (ctx, bomb) => {
+        if (bomb.isExploding) return;
+        ctx.beginPath();
+        ctx.arc(bomb.x, bomb.y, bomb.explosionRadius, 0, Math.PI * 2);
+        ctx.fillStyle = 'red';
+        ctx.fill();
+        ctx.closePath();
+    };
+
+    // Main game setup and intervals
     useEffect(() => {
         if (isGameOver) return;
 
-        const intervalId = setInterval(gameLoop, 1000 / 60); // 60fps
-        const intervalFruit = setInterval(addFruit, 2000);   // Add fruit every 2 seconds
-        const intervalBomb = setInterval(addBomb, 5000);     // Add bomb every 5 seconds
+        // Use 60 frames per second (1000 ms / 60)
+        const intervalId = setInterval(gameLoop, 1000 / 60);
+        const intervalFruit = setInterval(addFruit, 1200); // Add fruit every 1.2 seconds
+        const intervalBomb = setInterval(addBomb, 5000); // Add bomb every 5 seconds
 
         return () => {
             clearInterval(intervalId);
@@ -122,5 +162,5 @@ export const FruitLogic = ({
         };
     }, [canvasRef, isGameOver]);
 
-    return null;
+    return null; // No canvas here, as it’s handled in the parent component
 };
