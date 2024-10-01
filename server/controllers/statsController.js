@@ -1,5 +1,4 @@
 import {db} from "../db/db.js";
-
 /**
  * Player wins API
  *

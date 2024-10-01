@@ -2,15 +2,21 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import './GameSelection.css';
 import {Ninja, TicTacToe} from "../GameIds";
-
+/**
+ * Game selection component
+ *
+ * @param setSelectedGame
+ * @returns {Element}
+ * @constructor
+ */
 const GameSelection = ({ setSelectedGame }) => {
     const history = useHistory();
-    // Handle game being selected
+
     const handleGameButtonClick = (game) => {
         setSelectedGame(game);
         history.push('/type-selection');
     };
-    // Handle log out being chosen
+
     const handleLogout = () => {
         localStorage.removeItem('user');
         document.cookie = 'authToken=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';

@@ -7,6 +7,8 @@ import { Ninja, TicTacToe } from "../GameIds";
  * Queue component for handling player vs player selection.
  * Redirects to a game page with the two players once matched.
  *
+ * TODO: Make it less hardcoded for queues.
+ *
  * @param {string} selectedGame - The selected game type (TicTacToe or Connect4).
  * @returns {JSX.Element} The Queue component.
  */

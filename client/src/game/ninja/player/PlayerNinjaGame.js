@@ -2,9 +2,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import { FruitLogic } from './FruitLogic';
 import { PointerDetection } from './PointerDetection';
 import Webcam from "react-webcam";
+import io from 'socket.io-client'; // Import the socket.io client
 import './NinjaGame.css';
+import {TicTacToePlayer} from "../../tictactoe/player/TicTacToePlayer";
+import {NinjaPlayer} from "./NinjaPlayer";
 
-const NinjaGame = ( {handleFruitSliced} ) => {
+const socket = io("http://localhost:4000"); // Connect to the socket server
+
+const PlayerNinjaGame = ( { player1, player2 } ) => {
     const webcamRef = useRef(null);
     const canvasRef = useRef(null); // Game canvas
     const overlayCanvasRef = useRef(null); // Pointer canvas
@@ -13,6 +18,11 @@ const NinjaGame = ( {handleFruitSliced} ) => {
     const [startCountdown, setStartCountdown] = useState(3);
     const [gameStarted, setGameStarted] = useState(false);
     const [isGameOver, setGameOver] = useState(false);
+    const [gameId, setGameId] = useState(0);
+
+    // Player instances
+    const player1Instance = new NinjaPlayer({ username: player1, color: 'red' });
+    const player2Instance = new NinjaPlayer({ username: player2, color: 'blue' });
 
     // Handle countdown timer to start the game
     useEffect(() => {
@@ -21,13 +31,40 @@ const NinjaGame = ( {handleFruitSliced} ) => {
                 setStartCountdown(prev => prev - 1);
             }, 1000);
 
-            // Clear the interval when countdown ends or component unmounts
             return () => clearInterval(countdownTimer);
         } else if (startCountdown === 0 && !gameStarted) {
-            // Start the game when countdown reaches zero
-            setGameStarted(true);
+            handleGameStarted();
         }
     }, [startCountdown, gameStarted]);
+
+    const cleanupSocket = () => {
+        socket.off("updateGame");
+        socket.disconnect();
+    };
+    // Join the game room when component mounts
+    useEffect(() => {
+        socket.on('createGame', ({ player1, player2 }, generatedGameId) => {
+            setGameId(generatedGameId);
+            socket.emit('joinGame', { gameId: generatedGameId, playerId: player1 });
+            socket.emit('joinGame', { gameId: generatedGameId, playerId: player2 });
+            games[generatedGameId] = {lastUpdated: Date.now()};
+
+            // Set a timer to remove the game after 15 minutes of inactivity
+            setTimeout(() => {
+                if (Date.now() - games[generatedGameId].lastUpdated > 15 * 60 * 1000) {
+                    delete games[generatedGameId];
+                    handleGameEnd();
+                }
+            }, 15 * 60 * 1000);
+        });
+        socket.on('playerDisconnected', ({ player }) => {
+            alert(`${player} has disconnected. The game will end.`);
+            handleGameEnd();
+        });
+        return () => {
+            cleanupSocket();
+        };
+    }, [gameId, playerId]);
 
     // Handle pointer detection using webcam and hand detection
     useEffect(() => {
@@ -35,6 +72,7 @@ const NinjaGame = ( {handleFruitSliced} ) => {
             const cleanupHandDetection = PointerDetection(webcamRef, overlayCanvasRef, (midpoint) => {
                 setSwipeDetected(true);
                 setSwipeMidpoint(midpoint);
+                socket.emit('pointerMove', { gameId, playerId, midpoint }); // Emit pointer move with gameId and playerId
             });
 
             return () => {
@@ -43,7 +81,7 @@ const NinjaGame = ( {handleFruitSliced} ) => {
                 }
             };
         }
-    }, [isGameOver]);
+    }, [isGameOver, gameId, playerId]);
 
     // Reset swipe detection after it’s processed
     useEffect(() => {
@@ -52,9 +90,27 @@ const NinjaGame = ( {handleFruitSliced} ) => {
         }
     }, [swipeDetected]);
 
-    // Handle game over when a bomb is triggered
-    const handleBombTriggered = () => {
+    // Start the game and emit to the server
+    const handleGameStarted = () => {
+        setGameStarted(true);
+        socket.emit('gameStarted', { gameId });
+    };
+
+    // Handle game over and emit to the server
+    const handleGameOver = () => {
         setGameOver(true);
+        socket.emit('gameOver', { gameId });
+    };
+
+    // Handle bomb trigger and emit to the server
+    const handleBombTriggered = (bombId) => {
+        socket.emit('bombTriggered', { gameId, bombId });
+        handleGameOver();
+    };
+
+    // Handle fruit slicing and emit to the server
+    const handleFruitSliced = (fruitId) => {
+        socket.emit('fruitSliced', { gameId, playerId, fruitId });
     };
 
     return (
@@ -87,6 +143,9 @@ const NinjaGame = ( {handleFruitSliced} ) => {
                 swipeMidpoint={swipeMidpoint}
                 handleFruitSliced={handleFruitSliced}
                 handleBombTriggered={handleBombTriggered}
+                player1={player1Instance}
+                player2={player2Instance}
+                gameId={gameId}
             />
 
             {/* Countdown before the game starts */}
@@ -97,4 +156,4 @@ const NinjaGame = ( {handleFruitSliced} ) => {
     );
 };
 
-export default NinjaGame;
+export default PlayerNinjaGame;

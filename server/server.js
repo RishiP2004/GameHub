@@ -12,9 +12,8 @@ const app = express();
 const server = createServer(app);
 import cors from 'cors';
 
-// Middleware setup
 app.use(cors({
-    origin: 'http://localhost:3000', // Adjust based on your client URL
+    origin: 'http://localhost:3000',
     credentials: true,
 }));
 const __filename = fileURLToPath(import.meta.url);

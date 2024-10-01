@@ -14,8 +14,7 @@ const socket = io("http://localhost:4000");
  * @returns {Element}
  * @constructor
  */
-const TicTacToePlayerGame = () => {
-    const { player1, player2 } = useParams();
+const TicTacToePlayerGame = ( { player1, player2 } ) => {
     const history = useHistory();
     const [setGameState] = useState({ squares: Array(9).fill(null) });
     const [gameId, setGameId] = useState(0);

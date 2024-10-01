@@ -18,16 +18,16 @@ export const db = knex({
  */
 export const setupDatabase = async () => {
     try {
-        // Create the 'players' table for user authentication and player information
         const hasPlayersTable = await db.schema.hasTable('players');
+
         if (!hasPlayersTable) {
             await db.schema.createTable('players', (table) => {
                 table.string('username').primary().notNullable().unique();
                 table.string('password').notNullable();
             });
         }
-        // Create the 'player_wins' table to store player's wins with game type
         const hasPlayerWinsTable = await db.schema.hasTable('player_wins');
+
         if (!hasPlayerWinsTable) {
             await db.schema.createTable('player_wins', (table) => {
                 table.string('username').notNullable();
@@ -36,7 +36,6 @@ export const setupDatabase = async () => {
                 table.foreign('username').references('username').inTable('players').onDelete('CASCADE'); // Link to players username
             });
         }
-
         console.log('Database setup successfully');
     } catch (error) {
         console.error('Database setup failed:', error);

@@ -35,7 +35,11 @@ const PlayerStats = (gameName) => {
         if (!guestMode && username && gameName) {
             axios.get(`http://localhost:4000/api/player-wins/${username}?gameName=${gameName}`)
                 .then(response => {
-                    setMyWins(response.data.wins || 0);
+                    const fetchedWins = response.data.wins || 0;
+
+                    if (fetchedWins !== myWins) {
+                        setMyWins(fetchedWins);
+                    }
                     setLoading(false);
                 })
                 .catch(error => {
@@ -46,7 +50,7 @@ const PlayerStats = (gameName) => {
         } else {
             setLoading(false);
         }
-    }, [gameName, username, guestMode]);
+    }, [gameName, username, guestMode, myWins]);
 
     if (guestMode) return null;
 

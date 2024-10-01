@@ -1,41 +1,23 @@
 import { useEffect, useRef } from 'react';
+import io from 'socket.io-client'; // Import socket.io client
 
-export const FruitLogic = ({
-                               canvasRef,
-                               isGameOver,
-                               isGameStarted,
-                               setGameOver,
-                               swipeDetected,
-                               swipeMidpoint,
-                               handleFruitSliced,
-                               handleBombTriggered
-                           }) => {
+const socket = io("http://localhost:4000"); // Connect to the socket server
+
+export const PlayerFruitLogic = ({
+                                canvasRef,
+                                isGameOver,
+                                isGameStarted,
+                                setGameOver,
+                                swipeDetected,
+                                swipeMidpoint,
+                                handleFruitSliced,
+                                handleBombTriggered,
+                                player1,
+                                player2,
+                                gameId // Add gameId to keep track of the game
+                                }) => {
     const fruits = useRef([]);
     const bombs = useRef([]);
-
-    // Add new fruit with adjusted size and speed
-    const addFruit = () => {
-        const fruit = {
-            x: Math.random() * canvasRef.current.width,
-            y: 0,
-            isSliced: false,
-            radius: Math.random() * (3) + 3,
-            speed: Math.random() * 2 + 1.5
-        };
-        fruits.current.push(fruit);
-    };
-
-    // Add new bomb with adjusted size and speed
-    const addBomb = () => {
-        const bomb = {
-            x: Math.random() * canvasRef.current.width,
-            y: 0,
-            isExploding: false,
-            explosionRadius: 7,
-            speed: Math.random() * 2 + 2
-        };
-        bombs.current.push(bomb);
-    };
 
     // Check if fruit or bomb is sliced
     const isSliced = (obj) => {
@@ -46,14 +28,24 @@ export const FruitLogic = ({
         return distance < radius;
     };
 
-    // Detect swipes
+    // Emit request to add a new fruit to the game
+    const addFruit = () => {
+        socket.emit("addFruit", { gameId });
+    };
+
+    // Emit request to add a new bomb to the game
+    const addBomb = () => {
+        socket.emit("addBomb", { gameId });
+    };
+
+    // Detect swipes and trigger slicing events
     const checkDetection = () => {
         if (!swipeDetected || !swipeMidpoint) return;
 
         fruits.current.forEach(fruit => {
             if (!fruit.isSliced && isSliced(fruit)) {
                 fruit.isSliced = true;
-                handleFruitSliced();
+                handleFruitSliced(fruit.id); // Emit event to the server
             }
         });
 
@@ -61,8 +53,25 @@ export const FruitLogic = ({
             if (!bomb.isExploding && isSliced(bomb)) {
                 setGameOver(true);
                 bomb.isExploding = true;
-                handleBombTriggered();
+                handleBombTriggered(bomb.id); // Emit event to the server
             }
+        });
+    };
+
+    // Handle out-of-bounds fruits/bombs
+    const handleOutOfBounds = () => {
+        const canvasHeight = canvasRef.current.height;
+
+        fruits.current = fruits.current.filter(fruit => {
+            return fruit.y <= canvasHeight;
+        });
+
+        bombs.current = bombs.current.filter(bomb => {
+            if (bomb.y > canvasHeight) {
+                setGameOver(true);
+                return false;
+            }
+            return true;
         });
     };
 
@@ -103,23 +112,6 @@ export const FruitLogic = ({
         handleOutOfBounds();
     };
 
-    // Handle out-of-bounds fruits/bombs
-    const handleOutOfBounds = () => {
-        const canvasHeight = canvasRef.current.height;
-
-        fruits.current = fruits.current.filter(fruit => {
-            return fruit.y <= canvasHeight;
-        });
-
-        bombs.current = bombs.current.filter(bomb => {
-            if (bomb.y > canvasHeight) {
-                setGameOver(true);
-                return false;
-            }
-            return true;
-        });
-    };
-
     // Draw a fruit
     const drawFruit = (ctx, fruit) => {
         if (fruit.isSliced) return;
@@ -140,9 +132,27 @@ export const FruitLogic = ({
         ctx.closePath();
     };
 
+    // Listen for fruits and bombs added by the server
+    useEffect(() => {
+        if (!isGameStarted) return;
+
+        socket.on('fruitAdded', (fruit) => {
+            fruits.current.push(fruit);
+        });
+
+        socket.on('bombAdded', (bomb) => {
+            bombs.current.push(bomb);
+        });
+
+        // Cleanup socket listeners when component unmounts
+        return () => {
+            socket.off('fruitAdded');
+            socket.off('bombAdded');
+        };
+    }, [isGameStarted]);
+
     // Main game setup and intervals
     useEffect(() => {
-        // Only start the game loop if the game has started and is not over
         if (!isGameStarted || isGameOver) return;
 
         // Use 60 frames per second (1000 ms / 60)
@@ -155,7 +165,7 @@ export const FruitLogic = ({
             clearInterval(intervalFruit);
             clearInterval(intervalBomb);
         };
-    }, [canvasRef, isGameStarted, isGameOver]); // Add isGameStarted and isGameOver to dependencies
+    }, [isGameStarted, isGameOver]); // Add isGameStarted and isGameOver to dependencies
 
     return null;
 };

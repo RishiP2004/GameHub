@@ -4,6 +4,14 @@ import { Ninja, TicTacToe } from "../GameIds";
 import Queue from "../queue/Queue";
 import './TypeSelection.css';
 
+/**
+ * Gamemode type selection component
+ *
+ * @param selectedGame
+ * @param setSelectedGame
+ * @returns {Element}
+ * @constructor
+ */
 const TypeSelection = ({ selectedGame, setSelectedGame }) => {
     const history = useHistory();
     const handleGameButtonClick = () => {
